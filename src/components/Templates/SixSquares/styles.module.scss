@@ -1,0 +1,13 @@
+.Root{
+    display: grid;
+    grid-template-columns: auto auto;
+    width: fit-content;
+    height: fit-content;
+}
+
+.Square{
+    width: 85mm;
+    height: 85mm;
+    margin: 1mm;
+    border: 1px solid black;
+}

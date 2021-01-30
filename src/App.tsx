@@ -1,24 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useRef, useState } from 'react';
 import './App.css';
+import SixSquares from './components/Templates/SixSquares';
+import A4 from './components/Papers/A4';
 
 function App() {
+  const [srcs, setSrcs] = useState(['https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8aHVtYW58ZW58MHx8MHw%3D&ixlib=rb-1.2.1&w=1000&q=80',
+  'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__340.jpg',
+  'https://images.unsplash.com/photo-1494548162494-384bba4ab999?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8ZGF3bnxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80']);
+  
+  const paperRef= useRef<any>()
+
+  const appRef = useRef<any>()
+
+  const onClick= () =>{
+    window.print()
+  }
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="App" ref={appRef}>
+      <A4 className="center-content" rootRef={paperRef}>
+        <SixSquares srcs={srcs} />
+      </A4>
+      <button onClick={onClick}>Print</button>
     </div>
   );
 }

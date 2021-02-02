@@ -11,3 +11,10 @@
     margin: 1mm;
     border: 1px solid black;
 }
+
+
+@media print {
+    .Square{
+        border: none;
+    }
+}

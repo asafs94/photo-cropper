@@ -1,7 +1,23 @@
+main{
+  width: 100%;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+
 .center-content{
   display: grid;
   justify-items: center;
   align-items: center;
+}
+
+.drawer{
+  width: 200px;
+  padding: 15px;
+  
 }
 
 @media print {

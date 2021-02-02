@@ -2,6 +2,8 @@ import React, { useRef, useState } from 'react';
 import './App.css';
 import SixSquares from './components/Templates/SixSquares';
 import A4 from './components/Papers/A4';
+import { Drawer } from '@material-ui/core';
+import Toolbar from './components/Toolbar';
 
 function App() {
   const [srcs, setSrcs] = useState(['https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8aHVtYW58ZW58MHx8MHw%3D&ixlib=rb-1.2.1&w=1000&q=80',
@@ -24,7 +26,9 @@ function App() {
         <SixSquares srcs={srcs} />
       </A4>
       </main>
-      
+      <Drawer classes={{ paper: 'drawer' }} variant="permanent" anchor="right">
+        <Toolbar />
+      </Drawer>
       <button onClick={onClick}>Print</button>
     </div>
   );

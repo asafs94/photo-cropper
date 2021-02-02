@@ -27,12 +27,17 @@ export default function DraggableBackground({ src='', className='', zoomSensitiv
         } )
     }
 
+    const handleDoubleClick = () => {
+        setZoom(1);
+        setCrop({ x:0, y: 0 })
+    }
+
     useEffect(()=>{
         const container = (containerRef.current as HTMLDivElement ).getBoundingClientRect();
         setCropSize({ width: container.width, height: container.height })
     }, [])
     return (
-        <div className={rootClassNames} ref={containerRef} >
+        <div className={rootClassNames} ref={containerRef} onDoubleClick={handleDoubleClick} >
             <Cropper 
                     crop={crop}
                     cropSize={cropSize}

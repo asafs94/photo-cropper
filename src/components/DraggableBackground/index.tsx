@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Cropper from 'react-easy-crop';
-import classes from './styles.module.scss';
+import useStyles from './styles';
 
 
 interface Props {
@@ -14,6 +14,7 @@ interface Props {
 export default function DraggableBackground({ src='', className='', zoomSensitivity=1 } : Props) {
     const [crop, setCrop] = useState({ x: 0, y: 0 })
     const [zoom, setZoom] = useState<number>(1);
+    const classes = useStyles()
     const rootClassNames = [classes.Root, className].join(' ');
     const containerRef = useRef<any>();
     const [cropSize, setCropSize] = useState({ width: 0, height: 0 });

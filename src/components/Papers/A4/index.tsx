@@ -1,5 +1,6 @@
+import { Paper } from '@material-ui/core';
 import React from 'react';
-import classes from './styles.module.scss';
+import useStyles from './styles';
 
 interface A4_Props {
     className?: string,
@@ -8,10 +9,11 @@ interface A4_Props {
 }
 
 export default function A4({className='', children, rootRef}: A4_Props) {
+    const classes = useStyles();
     const rootClassName=['A4',classes.Root, className].join(' ')
     return (
-        <div className={rootClassName} ref={rootRef}>
+        <Paper className={rootClassName} ref={rootRef}>
             {children}
-        </div>
+        </Paper>
     )
 }

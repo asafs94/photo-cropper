@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DraggableBackground from '../../DraggableBackground';
-import classes from './styles.module.scss'
+import useStyles from './styles'
 
 interface SixSquares_Props {
     srcs?: Array<string>
@@ -8,6 +8,7 @@ interface SixSquares_Props {
 
 export default function SixSquares({ srcs=[] }: SixSquares_Props) {
 
+    const classes = useStyles();
     const [_srcs, setSrcs] = useState(srcs);
 
     useEffect(()=>{

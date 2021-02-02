@@ -16,7 +16,9 @@ export default function ImageUpload() {
         _files.forEach( file => {
             (file as any).url = URL.createObjectURL(file);
         })
-        setFiles(_files);
+        if(_files.length){
+            setFiles(_files);
+        }
     },[setFiles])
 
     return (

@@ -21,7 +21,7 @@ function App() {
 
   return (
     <div className="App" ref={appRef}>
-      <main>
+      <main className='printed-area'>
       <A4 className="center-content" rootRef={paperRef}>
         <SixSquares srcs={srcs} />
       </A4>

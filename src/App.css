@@ -27,23 +27,13 @@ main{
     margin: 0;
     padding: 0;
   }
-  .A4{
-    position: fixed;
-    top: 0;
-    left: 0;
-    margin: 0;
-    padding: 0;
-    border: none;
+  .App :not(.printed-area, .printed-area *){
+    visibility: hidden;
   }
-  button{
-    display: none;
-  }
-  #preview{
-    display: none;
-  }
+
 }
 
 @page { 
-  size: auto;  
+  size: 210mm 297mm;  
   margin: 0mm; 
 }

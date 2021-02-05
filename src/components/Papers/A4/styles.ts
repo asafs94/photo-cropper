@@ -8,6 +8,15 @@ export default makeStyles( (theme: Theme) => {
             overflow: 'hidden',
             margin: 0,
             padding: 0,
+        },
+        '@media print':{
+            Root:{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                border: 'none',
+                boxShadow: 'none',
+            }
         }
     }
 } )

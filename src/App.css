@@ -5,6 +5,9 @@ main{
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  padding: 10px;
+  box-sizing: border-box;
+  margin-right: 230px;
 }
 
 
@@ -17,7 +20,6 @@ main{
 .drawer{
   width: 200px;
   padding: 15px;
-  
 }
 
 @media print {

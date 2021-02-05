@@ -14,6 +14,10 @@ export default makeStyles( (theme: Theme) => {
             margin: '1mm',
             border: `1px solid ${theme.palette.divider}`,
         },
+        Placeholder:{
+            backgroundPosition: 'center',
+            backgroundSize: 'cover',
+        },
         '@media print':{
             Square:{
                 border: 'none',

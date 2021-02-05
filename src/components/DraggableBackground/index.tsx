@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Cropper from 'react-easy-crop';
+import { Point } from 'react-easy-crop/types';
 import useStyles from './styles';
 
 
@@ -7,44 +8,39 @@ interface Props {
     src?: string,
     className?: string,
     style?: object,
-    zoomSensitivity?: number
+    zoomSensitivity?: number,
+    setZoom: (zoom: number) => void,
+    setPosition: (location: Point) => void,
+    zoom: number,
+    position: Point
 }
 
 
-export default function DraggableBackground({ src='', className='', zoomSensitivity=1 } : Props) {
-    const [crop, setCrop] = useState({ x: 0, y: 0 })
-    const [zoom, setZoom] = useState<number>(1);
+export default function DraggableBackground({ src='', className='', zoomSensitivity=1, setZoom, setPosition, zoom, position } : Props) {
     const classes = useStyles()
     const rootClassNames = [classes.Root, className].join(' ');
     const containerRef = useRef<any>();
     const [cropSize, setCropSize] = useState({ width: 0, height: 0 });
 
-    
-    const handleZoomChange = (newZoom: number) => {
-        setZoom( (oldZoom: number) => {
-            let diff =  newZoom - oldZoom;
-            return oldZoom + diff*zoomSensitivity;
-        } )
-    }
-
     const handleDoubleClick = () => {
         setZoom(1);
-        setCrop({ x:0, y: 0 })
+        setPosition({ x:0, y: 0 });
     }
 
     useEffect(()=>{
         const container = (containerRef.current as HTMLDivElement ).getBoundingClientRect();
         setCropSize({ width: container.width, height: container.height })
     }, [])
+    
     return (
         <div className={rootClassNames} ref={containerRef} onDoubleClick={handleDoubleClick} >
             <Cropper 
-                    crop={crop}
+                    crop={position}
                     cropSize={cropSize}
                     zoom={zoom}
                     image={src}
-                    onCropChange={setCrop}
-                    onZoomChange={handleZoomChange}
+                    onCropChange={setPosition}
+                    onZoomChange={setZoom}
                     showGrid={false}
                     restrictPosition={false}
                     minZoom={0.1}

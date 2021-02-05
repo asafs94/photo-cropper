@@ -1,29 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import DraggableBackground from '../../DraggableBackground';
+import AppCroppable from '../../../containers/AppCroppable';
+import { CroppableImage } from '../../../types/CroppableImage';
+import { PlaceholderImage } from '../../../types/Placeholder';
 import useStyles from './styles'
 
 interface SixSquares_Props {
-    srcs?: Array<string>
+    croppableImages?: Array<CroppableImage>
 }
 
-export default function SixSquares({ srcs=[] }: SixSquares_Props) {
+export default function SixSquares({ croppableImages=[] }: SixSquares_Props) {
 
     const classes = useStyles();
-    const [_srcs, setSrcs] = useState(srcs);
+    const [placeholders, setPlaceholders] = useState<Array<PlaceholderImage>>([]);
 
     useEffect(()=>{
-        let newSrcs;
-        if(srcs.length >= 6){
-            newSrcs = srcs.slice(0,5);
+        let _placeholders;
+        if(croppableImages.length >= 6){
+            _placeholders = [];
         } else {
-            newSrcs = [...srcs, ...new Array(6-srcs.length).fill('')];
+            _placeholders = new Array(6 - croppableImages.length).fill(new PlaceholderImage());
         }
-        setSrcs(newSrcs);
-    },[srcs])
+        setPlaceholders(_placeholders);
+    },[croppableImages.length])
 
     return (
         <div className={classes.Root}>
-            {_srcs.map((src,index) => <DraggableBackground className={classes.Square} key={src+index} src={src}/> ) }
+            {croppableImages.map((croppable, index) => <AppCroppable className={classes.Square} key={croppable.id} id={croppable.id} />)}
+            {placeholders.map( (placeholder, index) => <div key={`${placeholder.id}+${index}`} className={[classes.Square, classes.Placeholder].join(' ')} style={{ backgroundImage: `url(${placeholder.url})`}}></div> )}
         </div>
     )
 }

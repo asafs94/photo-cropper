@@ -12,7 +12,7 @@ export default makeStyles( (theme: Theme) => {
             width: '85mm',
             height: '85mm',
             margin: '1mm',
-            border: `1px solid ${theme.palette.divider}`,
+            border: `1px solid ${theme.palette.primary.main}`,
         },
         Placeholder:{
             backgroundPosition: 'center',

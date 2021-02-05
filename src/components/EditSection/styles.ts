@@ -6,13 +6,23 @@ interface Props {
 
 export default makeStyles<Theme, Props>((theme)=> {
     return {
+        Toolbar:{
+            padding: theme.spacing(),
+            marginBottom: theme.spacing()
+        },
         UploadPreview:{
             width: 200,
-            height: 200
+            height: 200,
+            overflow: 'auto',
+            marginBottom: theme.spacing()
         },
-        LoadButton:{
+        PreviewButtons:{
             width: '100%',
             visibility: ({filesExist}) => filesExist? 'visible' : 'hidden',
+            display: 'flex'
+        },
+        PreviewButton: {
+            flex: 1,
         }
     }
 })

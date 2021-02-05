@@ -2,7 +2,7 @@ import React, { useContext, useRef, useState } from 'react';
 import './App.css';
 import SixSquares from './components/Templates/SixSquares';
 import A4 from './components/Papers/A4';
-import { Button, Drawer } from '@material-ui/core';
+import { Drawer } from '@material-ui/core';
 import EditSection from './components/EditSection';
 import { ImageContext } from './hoc/ImageProvider';
 

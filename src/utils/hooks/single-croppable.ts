@@ -28,7 +28,13 @@ export const useCroppable = (id: string) => {
         setCroppables(setCroppableZoom(id, zoom))
     }, [setCroppables, id])
 
-    return { setPosition, croppable, setZoom }
+    const applyToAll = useCallback(()=>{
+        if(croppable){
+            setCroppables(applyCroppablePropsToAll(croppable))
+        } 
+    },[setCroppables, croppable])
+
+    return { setPosition, croppable, setZoom, applyToAll }
 
 }
 
@@ -50,5 +56,15 @@ const setCroppableZoom = (id: string, zoom: number) => (croppables: Array<Croppa
         return croppables;
     }
     croppable.zoom = zoom;
+    return _croppables;
+}
+
+
+const applyCroppablePropsToAll = (croppable: CroppableImage) => (croppables: Array<CroppableImage>) => {
+    const _croppables = [...croppables];
+    _croppables.forEach( c => {
+        c.position = croppable.position;
+        c.zoom = croppable.zoom;
+    });
     return _croppables;
 }

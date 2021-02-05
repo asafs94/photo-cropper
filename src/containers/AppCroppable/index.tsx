@@ -1,8 +1,9 @@
 
 
-import React from 'react'
+import React, { useContext } from 'react'
 import DraggableBackground from '../../components/DraggableBackground'
 import { useCroppable } from '../../utils/hooks/single-croppable';
+import { AppContextMenuContext } from '../../hoc/AppContextMenu';
 
 interface Props {
     id: string,
@@ -11,13 +12,28 @@ interface Props {
 
 export default function AppCroppable({id, className}: Props) {
 
-    const { croppable, setPosition, setZoom } = useCroppable(id);
+    const { croppable, setPosition, setZoom, applyToAll } = useCroppable(id);
+    const openContextMenu = useContext(AppContextMenuContext)
+
+    const generateContextMenuOptions = () => {
+        return [
+            {
+                text: 'Apply to All',
+                onSelect: applyToAll,
+                value: 'apply-to-all'
+            }
+        ]
+    }
+
+    const handleContextMenu = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        openContextMenu({ event, options: generateContextMenuOptions() })
+    }
 
     if(!croppable){
         return null;
     }
 
     return (
-        <DraggableBackground className={className} src={croppable?.url} setPosition={setPosition} setZoom={setZoom} zoom={croppable.zoom} position={croppable.position}  />
+        <DraggableBackground onContextMenu={handleContextMenu} className={className} src={croppable?.url} setPosition={setPosition} setZoom={setZoom} zoom={croppable.zoom} position={croppable.position}  />
     )
 }

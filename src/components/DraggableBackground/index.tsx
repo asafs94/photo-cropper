@@ -12,11 +12,12 @@ interface Props {
     setZoom: (zoom: number) => void,
     setPosition: (location: Point) => void,
     zoom: number,
-    position: Point
+    position: Point,
+    onContextMenu: ((event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void) | undefined
 }
 
 
-export default function DraggableBackground({ src='', className='', zoomSensitivity=1, setZoom, setPosition, zoom, position } : Props) {
+export default function DraggableBackground({ src='', className='', zoomSensitivity=1, setZoom, setPosition, zoom, position, onContextMenu } : Props) {
     const classes = useStyles()
     const rootClassNames = [classes.Root, className].join(' ');
     const containerRef = useRef<any>();
@@ -33,7 +34,7 @@ export default function DraggableBackground({ src='', className='', zoomSensitiv
     }, [])
     
     return (
-        <div className={rootClassNames} ref={containerRef} onDoubleClick={handleDoubleClick} >
+        <div className={rootClassNames} ref={containerRef} onDoubleClick={handleDoubleClick} onContextMenu={onContextMenu} >
             <Cropper 
                     crop={position}
                     cropSize={cropSize}

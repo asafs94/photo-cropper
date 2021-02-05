@@ -4,11 +4,14 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import ImageProvider from './hoc/ImageProvider';
+import AppContextMenu from './hoc/AppContextMenu';
 
 ReactDOM.render(
   <React.StrictMode>
     <ImageProvider>
+      <AppContextMenu>
       <App />
+      </AppContextMenu>
     </ImageProvider>
   </React.StrictMode>,
   document.getElementById('root')

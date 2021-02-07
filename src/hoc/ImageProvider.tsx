@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useEffect, useState } from 'react'
 import { CroppableImage } from '../types/CroppableImage';
+import { PlaceholderImage } from '../types/Placeholder';
 
 interface ImageContextValue {
     order?: Array<any>,
@@ -20,11 +21,25 @@ export default function ImageProvider({ children }: ImageProviderProps) {
 
     const [croppableImages, setCroppableImages] = useState<Array<CroppableImage>>([]); //Will be useState<Array<ImageFile>> later on
     const [order, setOrder] = useState<Array<any>>([]);
+    const maxAmount = 6;
 
     const uploadFiles = useCallback((files: FileList) => {
-        const _images = Array.from(files).map(file => new CroppableImage(file));
+        let _images = Array.from(files).map(file => new CroppableImage(file));
         setCroppableImages(_images);
     }, [setCroppableImages])
+
+    useEffect(()=>{
+        if(croppableImages.length < maxAmount){
+            setCroppableImages( c=> {
+                const newCroppables = [...c];
+                const differenceFromMax = maxAmount - c.length;
+                for(let i=0; i < differenceFromMax; i++){
+                        newCroppables.push(new PlaceholderImage());
+                }
+                return newCroppables;
+            } )
+        }
+    },[croppableImages, setCroppableImages])
 
     useEffect(() => {
         setOrder(croppableImages.map(({ id }) => id));

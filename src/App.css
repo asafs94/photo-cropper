@@ -1,4 +1,13 @@
 
+html, body, #root{
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 .center-content{
   display: grid;
   justify-items: center;

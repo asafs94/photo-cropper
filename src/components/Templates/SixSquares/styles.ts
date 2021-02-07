@@ -14,13 +14,12 @@ export default makeStyles( (theme: Theme) => {
             margin: '1mm',
             border: `1px solid ${theme.palette.primary.main}`,
         },
-        Placeholder:{
-            backgroundPosition: 'center',
-            backgroundSize: 'cover',
-        },
         '@media print':{
             Square:{
                 border: 'none',
+                width: '85mm',
+                height: '85mm',
+                margin: '1mm'
             }
         }
     }

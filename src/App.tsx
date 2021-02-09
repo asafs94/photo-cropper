@@ -20,7 +20,12 @@ function App() {
         </A4>
       </main>
       <Drawer classes={{ paper: classes.Drawer }} variant="permanent" anchor="right">
-        <EditSection onUpload={uploadFiles} loaded={!!croppableImages.length} onClear={onClear} />
+        <EditSection 
+          onUpload={uploadFiles} 
+          loaded={!!croppableImages.length} 
+          onClear={onClear} 
+          amount={6}
+          />
       </Drawer>
     </div>
   );

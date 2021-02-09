@@ -19,7 +19,8 @@ export default makeStyles( (theme: Theme) => {
                 border: 'none',
                 width: '85mm',
                 height: '85mm',
-                margin: '1mm'
+                margin: '1mm',
+                transform: 'scaleX(-1)'
             }
         }
     }

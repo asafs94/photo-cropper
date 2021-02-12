@@ -6,10 +6,10 @@ const useStyles = makeStyles((theme) => {
   return {
     Wrapper: {
       width: "100%",
-      height:  "100%",
+      height: "100%",
       position: "relative",
       overflow: "hidden",
-      cursor: "grab"
+      cursor: "grab",
     },
     Settings: {
       position: "sticky",
@@ -17,19 +17,19 @@ const useStyles = makeStyles((theme) => {
       left: 0,
       zIndex: 1,
       alignSelf: "flex-start",
-      '&>div':{
-        position: 'absolute',
-        left:0,
+      "&>div": {
+        position: "absolute",
+        left: 0,
         top: 35,
-        width: 'fit-content',
-        height: 'fit-content',
+        width: "fit-content",
+        height: "fit-content",
         display: "grid",
         gridGap: theme.spacing(),
         gridTemplateColumns: "auto auto auto",
         alignContent: "center",
         justifyContent: "center",
         alignItems: "center",
-      }
+      },
     },
     Select: {
       width: 190,
@@ -38,10 +38,11 @@ const useStyles = makeStyles((theme) => {
       width: "fit-content",
       height: "fit-content",
       position: "absolute",
-      top: ({childSize}: any) =>  `calc(50% - ${childSize.height/2}px)` ,
-      left: ({childSize}: any) =>  `calc(50% - ${childSize.width/2}px)`,
+      top: ({ childSize }: any) => `calc(50% - ${childSize.height / 2}px)`,
+      left: ({ childSize }: any) => `calc(50% - ${childSize.width / 2}px)`,
       margin: "auto",
-      transform: ({ scale, translate }: any) => `scale(${scale}) translate(${translate.x}px, ${translate.y}px)`,
+      transform: ({ scale, translate }: any) =>
+        `scale(${scale}) translate(${translate.x}px, ${translate.y}px)`,
     },
     "@media print": {
       Content: {
@@ -63,13 +64,13 @@ const selectOptions: Array<"fit" | number> = ["fit", 0.25, 0.5, 0.75, 1];
 
 const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
   const [scale, setScale] = useState(1);
-  const [translate, setTranslate] = useState({x: 0, y: 0});
+  const [translate, setTranslate] = useState({ x: 0, y: 0 });
   const [option, setOption] = useState<"fit" | number>(defaultOption);
   const [fitScale, setFitScale] = useState<number>(0);
   const [customOption, setCustomOption] = useState<null | number>(null);
   const [childSize, setChildSize] = useState({ width: 0, height: 0 });
-  const [dragging, setDragging] = useState(false)
-  const mousePosition = useRef({ x: 0, y:0 });
+  const [dragging, setDragging] = useState(false);
+  const mousePosition = useRef({ x: 0, y: 0 });
   const ref = useRef<any>();
   const childRef = useRef<any>();
   const classes = useStyles({ scale, fitScale, childSize, translate });
@@ -79,7 +80,7 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
     const container = wrapper.getBoundingClientRect();
     const child = childRef.current;
     const childSize = { width: child.clientWidth, height: child.clientHeight };
-    setChildSize(childSize)
+    setChildSize(childSize);
     const ratio = {
       width: container.width / child.clientWidth,
       height: container.height / child.clientHeight,
@@ -102,6 +103,20 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
       }
     },
     [setScale, fitScale]
+  );
+
+  const setPosition = useCallback(
+    (event: React.MouseEvent | React.TouchEvent) => {
+      let obj: any;
+      if ((event as any).changedTouches) {
+        obj = (event as React.TouchEvent).changedTouches[0];
+      } else {
+        obj = event;
+      }
+      mousePosition.current = { x: obj.clientX, y: obj.clientY };
+      setDragging(true);
+    },
+    [setDragging]
   );
 
   useEffect(() => {
@@ -148,46 +163,67 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
 
   useEffect(() => {
     setZoom(option);
-  }, [fitScale, option]);
+    if(selectOptions.includes(option)){
+      setTranslate({ x: 0, y: 0 })
+    }
+  }, [fitScale, option, setTranslate]);
 
-  const onDrag = useCallback((event: React.MouseEvent)=>{
+  const onDrag = useCallback(
+    (event: React.MouseEvent | React.TouchEvent) => {
+      event.preventDefault();
+      let obj: any;
+      if ((event as any).changedTouches) {
+        obj = (event as React.TouchEvent).changedTouches[0];
+      } else {
+        obj = event;
+      }
+      if (dragging) {
+        const { x, y } = mousePosition.current;
+        const delta = { x: obj.clientX - x, y: obj.clientY - y };
+        mousePosition.current = { x: obj.clientX, y: obj.clientY };
+        setTranslate((t) => {
+          return {
+            x: t.x + delta.x,
+            y: t.y + delta.y,
+          };
+        });
+      }
+    },
+    [setTranslate, dragging]
+  );
+
+  const onDrop = useCallback(
+    (event: MouseEvent | TouchEvent) => {
+      setDragging(false);
+    },
+    [setDragging]
+  );
+
+  useEffect(() => {
+    document.addEventListener("mouseup", onDrop, false);
+    document.addEventListener("touchend", onDrop, false);
+    return () => {
+      document.removeEventListener("mouseup", onDrop, false);
+      document.removeEventListener("touchend", onDrop, false);
+    };
+  }, []);
+
+  const onWheel = (event: React.WheelEvent) => {
     event.preventDefault();
-    if(dragging){
-      const {x,y} = mousePosition.current;
-      const delta = { x: event.clientX - x, y: event.clientY - y };
-      mousePosition.current = { x: event.clientX, y: event.clientY };
-      setTranslate((t)=>{
-        return {
-          x: t.x + delta.x,
-          y: t.y + delta.y
-        }
-      })
-    }
-  },[setTranslate, dragging])
-
-  const setPosition = (event: React.MouseEvent) => {
-    mousePosition.current = { x: event.clientX, y: event.clientY };
-    setDragging(true)
-  }
-
-  const onDrop = (event: MouseEvent) =>{
-    setDragging(false)
-  }
-
-  useEffect(()=>{
-    document.addEventListener('mouseup', onDrop, false)
-    return () =>{
-      document.removeEventListener('mouseup', onDrop, false)
-    }
-  },[])
-
-  const onWheel = (event: React.WheelEvent) =>{
-    const delta = -event.deltaY/1000;
+    const delta = -event.deltaY / 1000;
     setCustomOption(scale + delta);
-  }
+  };
 
   return (
-    <div ref={ref} onWheel={onWheel} onMouseDown={setPosition} onMouseMove={onDrag} className={classes.Wrapper} >
+    <div
+      ref={ref}
+      onWheel={onWheel}
+      onMouseDown={setPosition}
+      onMouseMove={onDrag}
+      onTouchStart={setPosition}
+      onTouchMove={onDrag}
+      className={classes.Wrapper}
+    >
       <div className={classes.Settings}>
         <div>
           <Select
@@ -222,7 +258,7 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
           </Fab>
         </div>
       </div>
-      <div ref={childRef}  className={classes.Content}>
+      <div ref={childRef} className={classes.Content}>
         {child}
       </div>
     </div>

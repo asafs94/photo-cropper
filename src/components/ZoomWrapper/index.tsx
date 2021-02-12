@@ -88,7 +88,7 @@ const ZoomWrapper = ({ children: child, defaultOption='fit' }: Props) => {
 
   useEffect(()=>{
       const child = childRef.current;
-      (child as HTMLDivElement).scrollIntoView()
+      (child as HTMLDivElement).scrollIntoView({ behavior: "auto", block: "center", inline: "center" })
   },[scale])
 
   useEffect(()=>{

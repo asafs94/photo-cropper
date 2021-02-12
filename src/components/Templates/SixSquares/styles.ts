@@ -12,7 +12,7 @@ export default makeStyles( (theme: Theme) => {
             width: '85mm',
             height: '85mm',
             margin: '1mm',
-            border: `1px solid ${theme.palette.primary.main}`,
+            border: `3px solid ${theme.palette.primary.main}`,
         },
         '@media print':{
             Square:{

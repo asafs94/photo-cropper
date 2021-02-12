@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useMediaQuery } from '@material-ui/core';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Cropper from 'react-easy-crop';
 import { Point } from 'react-easy-crop/types';
 import useStyles from './styles';
@@ -22,15 +23,29 @@ export default function DraggableBackground({ src='', className='', zoomSensitiv
     const rootClassNames = [classes.Root, className].join(' ');
     const containerRef = useRef<any>();
     const [cropSize, setCropSize] = useState({ width: 0, height: 0 });
+    const timeoutRef = useRef<any>();
+    const isPrintView = useMediaQuery('print');
 
     const handleDoubleClick = () => {
         setZoom(1);
         setPosition({ x:0, y: 0 });
     }
 
+    const resetCropSize = useCallback(
+        () => {
+            clearTimeout(timeoutRef.current);
+            const container = (containerRef.current as HTMLDivElement);
+            if(!container){
+                timeoutRef.current = setTimeout(resetCropSize,0);
+            } else {
+                setCropSize({ width: container.clientWidth, height: container.clientHeight })
+            }
+        },
+        [setCropSize],
+    )
+
     useEffect(()=>{
-        const container = (containerRef.current as HTMLDivElement ).getBoundingClientRect();
-        setCropSize({ width: container.width, height: container.height })
+        resetCropSize();
     }, [])
     
     return (
@@ -38,6 +53,7 @@ export default function DraggableBackground({ src='', className='', zoomSensitiv
             <Cropper 
                     crop={position}
                     cropSize={cropSize}
+                    disableAutomaticStylesInjection={isPrintView}
                     zoom={zoom}
                     image={src}
                     onCropChange={setPosition}

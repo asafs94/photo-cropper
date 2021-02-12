@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useRef } from 'react';
 import './App.css';
 import SixSquares from './components/Templates/SixSquares';
 import A4 from './components/Papers/A4';
@@ -6,6 +6,7 @@ import { Drawer } from '@material-ui/core';
 import EditSection from './components/EditSection';
 import { ImageContext } from './hoc/ImageProvider';
 import useStyles from './AppStyles';
+import ZoomWrapper from './components/ZoomWrapper';
 
 function App() {
   const paperRef= useRef<any>();
@@ -15,9 +16,11 @@ function App() {
   return (
     <div className={classes.Root} ref={appRef}>
       <main className={classes.Main}>
-        <A4 className='center-content' rootRef={paperRef}>
-          <SixSquares croppableImages={croppableImages} />
-        </A4>
+        <ZoomWrapper>
+          <A4 className='center-content' rootRef={paperRef}>
+            <SixSquares croppableImages={croppableImages} />
+          </A4>
+        </ZoomWrapper>
       </main>
       <Drawer classes={{ paper: classes.Drawer }} variant="permanent" anchor="right">
         <EditSection 

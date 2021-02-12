@@ -11,13 +11,15 @@ export default makeStyles( theme => {
             background: theme.palette.background.default
         },
         Main: {
-            width: `calc (100% - ${drawerWidth})`,
+            width: `calc (100% - ${drawerWidth}px)`,
+            height: '100%',
             display: 'flex',
             padding: theme.spacing(),
             boxSizing: 'border-box',
             alignItems: 'center',
             justifyContent: 'center',
             marginRight: drawerWidth,
+            overflow: 'hidden',
         },
         Drawer: {
             boxSizing: 'border-box',

@@ -49,7 +49,7 @@ export default function DraggableBackground({ src='', className='', zoomSensitiv
     }, [])
     
     return (
-        <div className={rootClassNames} ref={containerRef} onDoubleClick={handleDoubleClick} onContextMenu={onContextMenu} >
+        <div className={rootClassNames} onWheel={event=> event.stopPropagation()} onMouseDown={(event)=> event.stopPropagation()} ref={containerRef} onDoubleClick={handleDoubleClick} onContextMenu={onContextMenu} >
             <Cropper 
                     crop={position}
                     cropSize={cropSize}

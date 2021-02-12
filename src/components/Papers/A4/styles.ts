@@ -16,6 +16,7 @@ export default makeStyles( (theme: Theme) => {
                 left: 0,
                 border: 'none',
                 boxShadow: 'none',
+                zIndex: 9999
             }
         }
     }

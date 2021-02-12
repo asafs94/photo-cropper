@@ -11,27 +11,36 @@ export default makeStyles( theme => {
             background: theme.palette.background.default
         },
         Main: {
-            width: `calc (100% - ${drawerWidth}px)`,
             height: '100%',
             display: 'flex',
             padding: theme.spacing(),
             boxSizing: 'border-box',
-            alignItems: 'center',
             justifyContent: 'center',
-            marginRight: drawerWidth,
-            overflow: 'hidden',
+            overflow: 'auto',
         },
         Drawer: {
             boxSizing: 'border-box',
             width: drawerWidth,
             padding: theme.spacing(),
         },
+        DrawerFab:{
+            position: 'fixed',
+            top: theme.spacing(),
+            right: theme.spacing(),
+            zIndex: 1,
+        },
+        DrawerWrapper:{
+
+        },
         '@media print':{
             Root:{
                 '& :not($Main, $Main *)':{
-                    visibility: 'hidden'
+                    display: 'none !important'
                 }
+            },
+            DrawerWrapper:{
+                display: 'none'
             }
-        }
+        },
     }
 } )

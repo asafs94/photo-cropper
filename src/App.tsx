@@ -9,6 +9,7 @@ import useStyles from './AppStyles';
 import ZoomWrapper from './components/ZoomWrapper';
 import { useToggleable } from './utils/hooks/togglables';
 import { Menu } from '@material-ui/icons';
+import ImageDropZone from './hoc/ImageDropZone';
 
 function App() {
   const paperRef= useRef<any>();
@@ -18,26 +19,28 @@ function App() {
   const { croppableImages, uploadFiles, onClear } = useContext(ImageContext);
   const smallScreen = useMediaQuery((theme: Theme)=> theme.breakpoints.down('sm'))
   return (
-    <div className={classes.Root} ref={appRef}>
-      <Fab className={classes.DrawerFab} size='small' color='primary' onClick={toggleDrawer}>
-        <Menu />
-      </Fab>
-      <main className={classes.Main}>
-        <ZoomWrapper>
-          <A4 className='center-content' rootRef={paperRef}>
-            <SixSquares croppableImages={croppableImages} />
-          </A4>
-        </ZoomWrapper>
-      </main>
-      <Drawer className={classes.DrawerWrapper} onClose={toggleDrawer} open={drawerOpen} classes={{ paper: classes.Drawer }} variant={smallScreen? "temporary" : "permanent"} anchor="right">
-        <EditSection 
-          onUpload={uploadFiles} 
-          loaded={!!croppableImages.length} 
-          onClear={onClear} 
-          amount={6}
-          />
-      </Drawer>
-    </div>
+    <ImageDropZone onDrop={uploadFiles}>
+      <div className={classes.Root} ref={appRef}>
+        <Fab className={classes.DrawerFab} size='small' color='primary' onClick={toggleDrawer}>
+          <Menu />
+        </Fab>
+        <main className={classes.Main}>
+          <ZoomWrapper>
+            <A4 className='center-content' rootRef={paperRef}>
+              <SixSquares croppableImages={croppableImages} />
+            </A4>
+          </ZoomWrapper>
+        </main>
+        <Drawer className={classes.DrawerWrapper} onClose={toggleDrawer} open={drawerOpen} classes={{ paper: classes.Drawer }} variant={smallScreen? "temporary" : "permanent"} anchor="right">
+          <EditSection 
+            onUpload={uploadFiles} 
+            loaded={!!croppableImages.length} 
+            onClear={onClear} 
+            amount={6}
+            />
+        </Drawer>
+      </div>
+    </ImageDropZone>
   );
 }
 

@@ -7,7 +7,7 @@ export default makeStyles( theme => {
         Root:{
             height: '100%',
             width: '100%',
-            overflow: 'auto',
+            overflow: 'hidden',
             background: theme.palette.background.default
         },
         Main: {
@@ -16,7 +16,7 @@ export default makeStyles( theme => {
             padding: theme.spacing(),
             boxSizing: 'border-box',
             justifyContent: 'center',
-            overflow: 'auto',
+            overflow: 'hidden',
         },
         Drawer: {
             boxSizing: 'border-box',

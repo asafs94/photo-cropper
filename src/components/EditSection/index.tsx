@@ -14,11 +14,11 @@ export default function Toolbar({onUpload, amount}: any) {
         const filesToAdd = _files.slice(0, amount);
         setFiles(filesToAdd);
         onUpload(filesToAdd);
-    }, [setFiles, amount]);
+    }, [setFiles, amount, onUpload]);
 
     const refresh = useCallback(()=>{
         onUpload(files)
-    },[files])
+    },[files, onUpload])
 
     return (
         <div>

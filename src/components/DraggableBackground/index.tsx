@@ -55,7 +55,7 @@ export default function DraggableBackground({
 
   useEffect(() => {
     resetCropSize();
-  }, []);
+  }, [resetCropSize]);
 
   return (
     <div

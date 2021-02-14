@@ -210,6 +210,7 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
 
   const onWheel = (event: React.WheelEvent) => {
     event.preventDefault();
+    event.stopPropagation();
     const delta = -event.deltaY / 1000;
     setCustomOption(scale + delta);
   };

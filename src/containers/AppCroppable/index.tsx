@@ -7,10 +7,11 @@ import { AppContextMenuContext } from '../../hoc/AppContextMenu';
 
 interface Props {
     id: string,
-    className? : string
+    className? : string,
+    disabled?: boolean
 }
 
-export default function AppCroppable({id, className}: Props) {
+export default function AppCroppable({id, className, disabled=false}: Props) {
 
     const { croppable, setPosition, setZoom, applyToAll } = useCroppable(id);
     const openContextMenu = useContext(AppContextMenuContext)
@@ -34,6 +35,6 @@ export default function AppCroppable({id, className}: Props) {
     }
 
     return (
-        <DraggableBackground onContextMenu={handleContextMenu} className={className} src={croppable?.url} setPosition={setPosition} setZoom={setZoom} zoom={croppable.zoom} position={croppable.position}  />
+        <DraggableBackground onContextMenu={handleContextMenu} className={className} disabled={disabled} src={croppable?.url} setPosition={setPosition} setZoom={setZoom} zoom={croppable.zoom} position={croppable.position}  />
     )
 }

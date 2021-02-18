@@ -7,6 +7,15 @@ export default makeStyles(theme => {
         Root:{
             overflow: 'hidden',
             position: 'relative',
+        },
+        CropperContainer:{
+            cursor: ({disabled}: any) => disabled? 'default': 'initial',
+        },
+        CropArea:{
+            cursor: ({disabled}: any) => disabled? 'default': 'initial',
+            color: 'transparent !important'
+        },
+        CropMedia:{
         }
     }
 })

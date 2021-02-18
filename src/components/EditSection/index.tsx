@@ -1,13 +1,15 @@
-import { IconButton, Paper } from '@material-ui/core';
+import { IconButton, Paper, TextField } from '@material-ui/core';
 import { PhotoCamera, Print, Refresh } from '@material-ui/icons';
 
 import React, { useCallback, useState } from 'react'
+import { lineBreakCount } from '../../utils';
 import ImageUpload from '../ImageUpload'
 import useStyles from './styles';
 
-export default function Toolbar({onUpload, amount}: any) {
+export default function Toolbar({onUpload, amount, headerNote, footerNote, setHeaderNote, setFooterNote}: any) {
 
     const [files, setFiles] = useState<any>([]);
+    
     const classes = useStyles({ filesExist: !!files.length })
 
     const handleUpload = useCallback((_files: any[]) => {
@@ -19,6 +21,18 @@ export default function Toolbar({onUpload, amount}: any) {
     const refresh = useCallback(()=>{
         onUpload(files)
     },[files, onUpload])
+
+    const handleChange = useCallback((event : React.ChangeEvent)=>{
+        const { name, value } = (event.target as HTMLInputElement );
+        if(lineBreakCount(value) >= 2){
+            console.error("Can't enter more than two lines.");
+        }
+        if( name === "headerNote" ){
+            setHeaderNote(value);
+        } else {
+            setFooterNote(value);
+        }
+    },[setHeaderNote, setFooterNote])
 
     return (
         <div>
@@ -36,6 +50,27 @@ export default function Toolbar({onUpload, amount}: any) {
                     <Print />
                 </IconButton>
             </Paper>
+            <div>
+            <TextField
+                label="Header Note"
+                className={classes.TextField}
+                multiline
+                rows={2}
+                name="headerNote"
+                variant="outlined"
+                value={headerNote}
+                onChange={handleChange}
+                />
+            <TextField
+                label="Footer Note"
+                className={classes.TextField}
+                multiline
+                rows={2}
+                variant="outlined"
+                value={footerNote}
+                onChange={handleChange}
+                />
+            </div>
         </div>
     )
 }

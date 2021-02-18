@@ -16,6 +16,7 @@ interface Props {
   onContextMenu:
     | ((event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void)
     | undefined;
+  disabled?: boolean;
 }
 
 export default function DraggableBackground({
@@ -27,18 +28,23 @@ export default function DraggableBackground({
   zoom,
   position,
   onContextMenu,
+  disabled=false
 }: Props) {
-  const classes = useStyles();
+  const classes = useStyles({disabled});
   const rootClassNames = [classes.Root, className].join(" ");
   const containerRef = useRef<any>();
   const [cropSize, setCropSize] = useState({ width: 0, height: 0 });
   const timeoutRef = useRef<any>();
   const isPrintView = useMediaQuery("print");
 
-  const handleDoubleClick = () => {
-    setZoom(1);
-    setPosition({ x: 0, y: 0 });
-  };
+  const handleDoubleClick = useCallback(() => {
+    if(disabled){
+      return;
+    } else {
+      setZoom(1);
+      setPosition({ x: 0, y: 0 });
+    }
+  }, [setPosition, setZoom, disabled]);
 
   const resetCropSize = useCallback(() => {
     clearTimeout(timeoutRef.current);
@@ -57,24 +63,37 @@ export default function DraggableBackground({
     resetCropSize();
   }, [resetCropSize]);
 
+  const returnFunctionIfEnabled = useCallback((callback: any) =>{
+    if(disabled){
+      return () => {};
+    } else {
+      return callback;
+    }
+  }, [disabled]);
+
+  const stopPropagation = useCallback((event: Event) => {
+    event.stopPropagation()
+  }, [])
+
   return (
     <div
       className={rootClassNames}
-      onTouchStart={ (event) => event.stopPropagation() }
-      onWheel={(event) => event.stopPropagation()}
-      onMouseDown={(event) => event.stopPropagation()}
+      onTouchStart={ returnFunctionIfEnabled(stopPropagation) }
+      onWheel={ returnFunctionIfEnabled(stopPropagation)}
+      onMouseDown={ returnFunctionIfEnabled(stopPropagation) }
       ref={containerRef}
-      onDoubleClick={handleDoubleClick}
-      onContextMenu={onContextMenu}
+      onDoubleClick={returnFunctionIfEnabled(handleDoubleClick)}
+      onContextMenu={returnFunctionIfEnabled(onContextMenu)}
     >
       <Cropper
+        classes={{ containerClassName: classes.CropperContainer , cropAreaClassName: classes.CropArea, mediaClassName: classes.CropMedia}}
         crop={position}
         cropSize={cropSize}
-        disableAutomaticStylesInjection={isPrintView}
+        disableAutomaticStylesInjection={isPrintView || disabled}
         zoom={zoom}
         image={src}
-        onCropChange={setPosition}
-        onZoomChange={setZoom}
+        onCropChange={returnFunctionIfEnabled(setPosition)}
+        onZoomChange={returnFunctionIfEnabled(setZoom)}
         showGrid={false}
         restrictPosition={false}
         minZoom={0.1}

@@ -24,5 +24,8 @@ export default makeStyles<Theme, Props>((theme) => {
     PreviewButton: {
       flex: 1,
     },
+    TextField:{
+      margin: theme.spacing(),
+    }
   };
 });

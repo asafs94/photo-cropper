@@ -9,10 +9,10 @@ export default makeStyles(theme => {
             position: 'relative',
         },
         CropperContainer:{
-            cursor: ({disabled}: any) => disabled? 'default': 'initial',
+            cursor: ({disabled}: any) => disabled? 'default': 'drag',
         },
         CropArea:{
-            cursor: ({disabled}: any) => disabled? 'default': 'initial',
+            cursor: ({disabled}: any) => disabled? 'default': 'drag',
             color: 'transparent !important'
         },
         CropMedia:{

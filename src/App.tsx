@@ -56,7 +56,7 @@ function App() {
             </A4>
           </ZoomWrapper>
         </main>
-        <Dialog open={false}>
+        <Dialog open={true}>
           <ImageEditor imageId={croppableImages[0] && croppableImages[0].id || ''} />
         </Dialog>
         <Drawer

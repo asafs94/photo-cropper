@@ -1,5 +1,5 @@
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
 import DragHandleIcon from '@material-ui/icons/DragHandle';
 import Draggable, { DraggableEventHandler } from "react-draggable";
@@ -15,7 +15,7 @@ interface Props {
   displayMode?: boolean;
   html: string,
   setHtml: (html: any)=> void,
-  onSelect?: () => void;
+  onSelect?: (event: React.MouseEvent) => void;
   onDeselect?: () => void;
   position: { x: number, y: number },
   handleDrag: DraggableEventHandler
@@ -25,7 +25,6 @@ export default function TextBox({
   textStyle = {},
   onFocus,
   onBlur,
-  focused = false,
   selected = false,
   displayMode = false,
   html,
@@ -53,6 +52,12 @@ export default function TextBox({
     }
   }, []);
 
+  useEffect(()=>{
+    if(!selected){
+      editable.current.blur();
+    }
+  },[selected])
+
   const handleDeselect = useCallback(() => {
     editable.current.blur();
     onDeselect && onDeselect(); 
@@ -70,10 +75,11 @@ export default function TextBox({
                 innerRef={editable}
                 className={classes.Input}
                 html={html}
-                style={textStyle}
+                style={{...textStyle, userSelect: selected? 'auto' : 'none'}}
                 onChange={onChange}
                 autoCorrect="off"
                 autoCapitalize="off"
+                spellCheck="false"
                 ></ContentEditable>
             </div>
         </Draggable>

@@ -27,6 +27,7 @@ export default makeStyles<Theme, StyleProps>((theme) => {
       cursor: "move",
       border: `2px solid ${theme.palette.text.primary}`,
       borderRadius: "50%",
+      fontSize: '12px',
     },
   };
 });

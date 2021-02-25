@@ -4,27 +4,26 @@ export default makeStyles((theme) => {
   const size = 450;
   return {
     Root: {
-      width: "75vh",
-      height: "75vh",
+      maxWidth: "100%",
+      maxHeight: "100%",
       background: fade(theme.palette.common.black, 0.2),
       padding: theme.spacing(),
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      "@media (orientation: portrait)": {
-        width: "100vw",
-        height: "100vh",
-      },
+      boxSizing: 'border-box',
+      display: "grid",
+      gridTemplateColumns: "1fr",
+      gridTemplateRows: "auto 1fr auto",
+      justifyItems: "center",
+      gridGap: theme.spacing(),
     },
     Toolbar: {
       width: size,
-      marginBottom: theme.spacing(),
+      boxSizing: 'border-box',
     },
     Editable: {
       width: size,
       height: size,
       position: "relative",
+      boxSizing: 'border-box',
     },
     Image: {
       width: "100%",
@@ -32,5 +31,8 @@ export default makeStyles((theme) => {
       background: theme.palette.background.paper,
       margin: "auto",
     },
+    SaveButton:{
+      width: size
+    }
   };
 });

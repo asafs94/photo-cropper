@@ -13,7 +13,7 @@ import {
 import AppImage from "../AppImage/AppImage";
 import ZoomWrapper from "../ZoomWrapper";
 
-export default function ImageEditor({ imageId, imageSize }: any) {
+export default function ImageEditor({ imageId, imageSize, onClose }: any) {
   const classes = useStyles({ imageSize });
   const [selected, setSelected] = useState<string>();
   const { image, setCrop, setZoom } = useEditableImage(imageId);
@@ -25,7 +25,8 @@ export default function ImageEditor({ imageId, imageSize }: any) {
 
   const onSave = useCallback(() => {
     submitTextboxes();
-  }, [submitTextboxes]);
+    onClose && onClose();
+  }, [submitTextboxes, onClose]);
 
   const setHtml = useCallback(
     (id: string) => (_content: string) => {

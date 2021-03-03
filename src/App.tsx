@@ -77,7 +77,7 @@ function App() {
           </ZoomWrapper>
         </main>
         <Dialog open={dialogPayload.open} onClose={()=>setDialogPayload({ open: false })} >
-          <ImageEditor imageId={dialogPayload.imageId} imageSize={{ height: imageCurrentSize, width: imageCurrentSize }} />
+          <ImageEditor imageId={dialogPayload.imageId} imageSize={{ height: imageCurrentSize, width: imageCurrentSize }} onClose={()=>setDialogPayload({ open: false })} />
         </Dialog>
         <Drawer
           className={classes.DrawerWrapper}

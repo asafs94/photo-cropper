@@ -3,7 +3,6 @@ import { useSingle } from ".";
 import { ImageContext } from "../../hoc/ImageProvider"
 import { Position } from "../../types";
 import { CroppableImage } from "../../types/CroppableImage";
-import EditableImage from "../../types/EditableImage";
 import TextBox from "../../types/TextBox";
 
 

@@ -1,9 +1,10 @@
 import { CroppableImage } from "./CroppableImage";
 
 import placeholder from '../resources/placeholder.jpg';
+import EditableImage from "./EditableImage";
 
-export class PlaceholderImage extends CroppableImage {
+export class PlaceholderImage extends EditableImage {
     constructor(){
-        super(undefined, undefined, undefined, placeholder);
+        super({ url: placeholder });
     }
 }

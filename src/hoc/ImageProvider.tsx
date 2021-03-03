@@ -1,17 +1,17 @@
 import React, { createContext, useCallback, useEffect, useState } from 'react'
-import { CroppableImage } from '../types/CroppableImage';
+import EditableImage from '../types/EditableImage';
 import { PlaceholderImage } from '../types/Placeholder';
 
 interface ImageContextValue {
     order?: Array<any>,
     setOrder?: React.Dispatch<React.SetStateAction<any[]>>,
-    croppableImages: Array<CroppableImage>,
+    images: Array<EditableImage>,
     uploadFiles?: (files: FileList) => void,
-    setCroppables: React.Dispatch<React.SetStateAction<CroppableImage[]>>,
+    setImages: React.Dispatch<React.SetStateAction<EditableImage[]>>,
     onClear: () => void
 }
 
-export const ImageContext = createContext<ImageContextValue>({ croppableImages: [], setCroppables: () => { }, onClear: () => {} });
+export const ImageContext = createContext<ImageContextValue>({ images: [], setImages: () => { }, onClear: () => {} });
 
 interface ImageProviderProps {
     children: React.ReactNode
@@ -19,38 +19,38 @@ interface ImageProviderProps {
 
 export default function ImageProvider({ children }: ImageProviderProps) {
 
-    const [croppableImages, setCroppableImages] = useState<Array<CroppableImage>>([]); //Will be useState<Array<ImageFile>> later on
+    const [images, setImages] = useState<Array<EditableImage>>([]); //Will be useState<Array<ImageFile>> later on
     const [order, setOrder] = useState<Array<any>>([]);
     const maxAmount = 6;
 
     const uploadFiles = useCallback((files: FileList) => {
-        let _images = Array.from(files).map(file => new CroppableImage(file));
-        setCroppableImages(_images);
-    }, [setCroppableImages])
+        let _images = Array.from(files).map(file => new EditableImage({file}));
+        setImages(_images);
+    }, [setImages])
 
     useEffect(()=>{
-        if(croppableImages.length < maxAmount){
-            setCroppableImages( c=> {
-                const newCroppables = [...c];
+        if(images.length < maxAmount){
+            setImages( c=> {
+                const newImages = [...c];
                 const differenceFromMax = maxAmount - c.length;
                 for(let i=0; i < differenceFromMax; i++){
-                        newCroppables.push(new PlaceholderImage());
+                        newImages.push(new PlaceholderImage());
                 }
-                return newCroppables;
+                return newImages;
             } )
         }
-    },[croppableImages, setCroppableImages])
+    },[images, setImages])
 
     useEffect(() => {
-        setOrder(croppableImages.map(({ id }) => id));
-    }, [croppableImages, setOrder]);
+        setOrder(images.map(({ id }) => id));
+    }, [images, setOrder]);
 
     const onClear = useCallback(()=>{
-        setCroppableImages([]);
-    },[setCroppableImages])
+        setImages([]);
+    },[setImages])
 
     return (
-        <ImageContext.Provider value={{ order, setOrder, croppableImages, uploadFiles, setCroppables: setCroppableImages, onClear }}>
+        <ImageContext.Provider value={{ order, setOrder, images, uploadFiles, setImages, onClear }}>
             {children}
         </ImageContext.Provider>
     )

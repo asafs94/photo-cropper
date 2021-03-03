@@ -1,4 +1,4 @@
-import { IdentifiedItem } from "../types";
+import { IdentifiedItem, setStatePayload } from "../types";
 
 
 export const isImageFile = (file: File) => {
@@ -14,13 +14,27 @@ export const lineBreakCount = (str: string) => {
  * @param id 
  * @param callback 
  */
-export function setItemById<T extends IdentifiedItem>( id: any, callback: (item: T)=>void ){
+export function setItemById<T extends IdentifiedItem>( id: any, setState: setStatePayload<T> ){
     return (array: Array<T>) => {
         return array.map( item => {
             if(item.id === id){
-                callback(item);
+                if( typeof setState === "function" ){
+                    item = setState(item);
+                } else {
+                    item = setState;
+                }
             }
             return item;
         })
     }
+}
+
+
+export function getItemById<T extends IdentifiedItem>(id: any, array: T[]){
+    return array.find(byId(id));
+}
+
+
+export const byId = (id: any) => (item: IdentifiedItem) => {
+    return item.id === id;
 }

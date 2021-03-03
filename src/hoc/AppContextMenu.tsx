@@ -5,17 +5,24 @@ import { Position } from '../types';
 export const AppContextMenuContext = createContext<(payload: ContextMenuPayload) => void>(()=>{})
 
 interface Option {
-    value: string,text: string, onSelect?: any
+    value: string, text: string
+}
+
+interface PromiseHandler {
+    resolve: Function,
+    reject: Function
 }
 
 interface ContextMenuPayload {
     options: Array<Option>,
     event: React.MouseEvent | MouseEvent,
+    promise: PromiseHandler
 }
 
 export default function AppContextMenu({children}: any) {
     const [options, setOptions] = useState<Array<Option>>([]);
     const [position, setPosition] = useState<Position | null>(null);
+    const [promise, setPromise] = useState<PromiseHandler>();
     const openContextMenu = (payload: ContextMenuPayload) =>{
         payload.event.preventDefault();
         setPosition({x: payload.event.clientX, y: payload.event.clientY});
@@ -24,15 +31,17 @@ export default function AppContextMenu({children}: any) {
     
     const closeContextMenu = useCallback(
         () => {
-            setPosition(null)
+            setPosition(null);
+            setPromise(undefined);
         },
-        [setPosition],
+        [setPosition, setPromise],
     )
 
-    const handleClick = (option: Option) => () =>{
-        option.onSelect && option.onSelect();
+
+    const handleClick = useCallback((option: Option) => () =>{
+        promise?.resolve(option);
         closeContextMenu();
-    }
+    }, [promise])
 
     useEffect(()=>{
         const prevent = (event: MouseEvent) => {

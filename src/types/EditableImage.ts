@@ -1,5 +1,6 @@
 import { Position } from ".";
 import { CroppableImage } from "./CroppableImage";
+import TextBox from "./TextBox";
 
 
 interface ConstructorPayload {
@@ -11,7 +12,7 @@ interface ConstructorPayload {
 }
 
 export default class EditableImage extends CroppableImage {
-    layers: Array<any> 
+    private _textboxes: Array<TextBox> 
 
     constructor(payload: ConstructorPayload){
         if(payload.croppableImage){
@@ -21,6 +22,14 @@ export default class EditableImage extends CroppableImage {
             const { file, position, zoom, url } = payload;
             super(file, position, zoom, url);
         }
-        this.layers = [];
+        this._textboxes = [];
+    }
+
+    set textboxes( textboxes: TextBox[] ){
+        this._textboxes = textboxes;
+    }
+
+    get textboxes(){
+        return this._textboxes;
     }
 }

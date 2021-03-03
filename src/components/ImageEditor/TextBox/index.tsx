@@ -10,15 +10,14 @@ interface Props {
   textStyle?: CSSProperties;
   onFocus?: (event: FocusEvent | React.FocusEvent) => void;
   onBlur?: (event: FocusEvent | React.FocusEvent) => void;
-  focused?: boolean;
   selected?: boolean;
   displayMode?: boolean;
   html: string,
-  setHtml: (html: any)=> void,
+  setHtml?: (html: any)=> void,
   onSelect?: (event: React.MouseEvent) => void;
   onDeselect?: () => void;
   position: { x: number, y: number },
-  handleDrag: DraggableEventHandler
+  handleDrag?: DraggableEventHandler
 }
 
 export default function TextBox({
@@ -40,7 +39,7 @@ export default function TextBox({
 
   const onChange = useCallback(
     (event: ContentEditableEvent) => {
-      setHtml(event.target.value);
+      setHtml && setHtml(event.target.value);
     },
     [setHtml]
   );

@@ -19,6 +19,7 @@ import { Menu } from "@material-ui/icons";
 import ImageDropZone from "./hoc/ImageDropZone";
 import TextWithLineBreaks from "./components/TextWithLinebreaks";
 import ImageEditor from "./components/ImageEditor";
+import { AppContextMenuContext } from "./hoc/AppContextMenu";
 
 
 function App() {
@@ -28,7 +29,9 @@ function App() {
   const [drawerOpen, toggleDrawer] = useToggleable(false);
   const [headerNote, setHeaderNote] = useState("");
   const [footerNote, setFooterNote] = useState("");
-  const { croppableImages, uploadFiles, onClear } = useContext(ImageContext);
+  const { images, uploadFiles, onClear } = useContext(ImageContext);
+  const [dialogPayload, setDialogPayload] = useState({ open: false });
+  const openContextMenu = useContext(AppContextMenuContext); 
   const smallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
@@ -49,15 +52,15 @@ function App() {
               <Typography component="header" className={classes.Note}>
                 <TextWithLineBreaks>{headerNote}</TextWithLineBreaks>
               </Typography>
-              <SixSquares croppableImages={croppableImages} />
+              <SixSquares images={images} />
               <Typography component="footer" className={classes.Note}>
                 <TextWithLineBreaks>{footerNote}</TextWithLineBreaks>
               </Typography>
             </A4>
           </ZoomWrapper>
         </main>
-        <Dialog open={true}>
-          <ImageEditor imageId={croppableImages[0] && croppableImages[0].id || ''} />
+        <Dialog open={dialogPayload.open} onClose={()=>setDialogPayload({ open: false })} >
+          <ImageEditor imageId={images[0] && images[0].id || ''} />
         </Dialog>
         <Drawer
           className={classes.DrawerWrapper}
@@ -69,7 +72,7 @@ function App() {
         >
           <EditSection
             onUpload={uploadFiles}
-            loaded={!!croppableImages.length}
+            loaded={!!images.length}
             onClear={onClear}
             amount={6}
             headerNote={headerNote}

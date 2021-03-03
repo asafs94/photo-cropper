@@ -15,7 +15,7 @@ import AppImage from "../AppImage/AppImage";
 export default function ImageEditor({ imageId }: any) {
   const classes = useStyles({});
   const [selected, setSelected] = useState<string>();
-  const { image, setPosition, setZoom } = useEditableImage(imageId);
+  const { image, setCrop, setZoom } = useEditableImage(imageId);
   const { setTextboxes, submitTextboxes, textboxes } = useImageTextboxes(
     imageId
   );
@@ -161,8 +161,8 @@ export default function ImageEditor({ imageId }: any) {
           cropDisabled={true}
           className={classes.Image}
           textboxes={[]}
-          crop={image.position}
-          setCrop={setPosition}
+          crop={image.crop}
+          setCrop={setCrop}
           zoom={image.zoom}
           setZoom={setZoom}
           src={image.url}

@@ -6,7 +6,7 @@ import TextBox from "./TextBox";
 interface ConstructorPayload {
     croppableImage?: CroppableImage,
     file?: File,
-    position?: Position,
+    crop?: Position,
     zoom?: number,
     url?: string
 }
@@ -15,13 +15,8 @@ export default class EditableImage extends CroppableImage {
     private _textboxes: Array<TextBox> 
 
     constructor(payload: ConstructorPayload){
-        if(payload.croppableImage){
-            const { url, id, position, zoom } = payload.croppableImage;
-            super(undefined, position, zoom, url, id);
-        } else {
-            const { file, position, zoom, url } = payload;
-            super(file, position, zoom, url);
-        }
+        const { file, crop, zoom, url } = payload;
+        super(file, crop, zoom, url);
         this._textboxes = [];
     }
 

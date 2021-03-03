@@ -8,17 +8,17 @@ export default function AppImageContainer({
   cropDisabled,
   onContextMenu,
 }: any) {
-  const { image, setPosition, setZoom } = useEditableImage(id); 
+  const { image, setCrop: setPosition, setZoom } = useEditableImage(id); 
 
   if (!image) {
     return null;
   }
 
-  const { zoom, position, url, textboxes } = image;
+  const { zoom, crop, url, textboxes } = image;
 
   return (
     <AppImage
-      crop={position}
+      crop={crop}
       zoom={zoom}
       setCrop={setPosition}
       setZoom={setZoom}

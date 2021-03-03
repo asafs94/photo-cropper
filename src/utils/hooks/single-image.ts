@@ -16,9 +16,9 @@ const useSingleEditableImage = (id: string) => {
 export const useEditableImage = (id: string) => {
     const [image, setImage] = useSingleEditableImage(id)
 
-    const setPosition = useCallback( (position: Position) => {
+    const setCrop = useCallback( (crop: Position) => {
         setImage((c) => { 
-            c.position = position;
+            c.crop = crop;
             return c;
          });
     }, [setImage, id] )
@@ -32,7 +32,7 @@ export const useEditableImage = (id: string) => {
 
 
 
-    return { setPosition, image, setZoom }
+    return { setCrop, image, setZoom }
 
 }
 
@@ -77,7 +77,7 @@ export const useImageTextboxes = (imageId: string) => {
 const applyCroppablePropsToAll = (croppable: CroppableImage) => (croppables: Array<CroppableImage>) => {
     const _croppables = [...croppables];
     _croppables.forEach( c => {
-        c.position = croppable.position;
+        c.crop = croppable.crop;
         c.zoom = croppable.zoom;
     });
     return _croppables;

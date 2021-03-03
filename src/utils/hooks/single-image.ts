@@ -38,31 +38,21 @@ export const useEditableImage = (id: string) => {
 
 
 export const useImageTextboxes = (imageId: string) => {
-    const [ croppable, setCroppable ] = useSingleEditableImage(imageId);
+    const [ image, setImage ] = useSingleEditableImage(imageId);
     const [ textboxes, setTextboxes ] = useState<TextBox[]>([]);
 
     const submitTextboxes = useCallback(()=>{
-        setCroppable(croppable => {
-            let editable;
-            if(croppable instanceof EditableImage){
-                editable = croppable as EditableImage;
-                editable.textboxes = textboxes;
-            } else {
-                editable = new EditableImage({ croppableImage: croppable });
-                editable.textboxes = textboxes;
-            }
+        setImage(editable => {
+            editable.textboxes = textboxes;
             return editable;
         })
-    },[setCroppable])
+    },[setImage])
 
     const getTextboxes = useCallback(()=>{
-        if(croppable instanceof EditableImage){
-            const textboxesCopy = JSON.parse(JSON.stringify((croppable as EditableImage).textboxes)) as TextBox[];
-            return textboxesCopy;
-        } else {
-            return [];
-        }
-    },[croppable])
+        const textboxesCopy = JSON.parse(JSON.stringify(image?.textboxes || [])) as TextBox[];
+        return textboxesCopy;
+    },[image])
+
 
     useEffect(()=>{
         setTextboxes(getTextboxes());

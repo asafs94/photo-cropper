@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Fab, makeStyles, MenuItem, Select } from "@material-ui/core";
-import { Add, Remove } from "@material-ui/icons";
+import { Fab, fade, makeStyles, MenuItem, Select } from "@material-ui/core";
+import { Add, Remove, PanTool } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -10,22 +10,23 @@ const useStyles = makeStyles((theme) => {
       position: "relative",
       overflow: "hidden",
       cursor: "grab",
+      boxSizing: "border-box",
     },
     Settings: {
       position: "sticky",
-      top: "calc( 100% - 70px )",
+      top: "100%",
       left: 0,
       zIndex: 1,
       alignSelf: "flex-start",
       "&>div": {
         position: "absolute",
         left: 0,
-        top: 35,
+        bottom: -20,
         width: "fit-content",
         height: "fit-content",
         display: "grid",
         gridGap: theme.spacing(),
-        gridTemplateColumns: "auto auto auto",
+        gridTemplateColumns: "auto auto auto auto",
         alignContent: "center",
         justifyContent: "center",
         alignItems: "center",
@@ -41,8 +42,19 @@ const useStyles = makeStyles((theme) => {
       top: ({ childSize }: any) => `calc(50% - ${childSize.height / 2}px)`,
       left: ({ childSize }: any) => `calc(50% - ${childSize.width / 2}px)`,
       margin: "auto",
+      cursor: "initial",
       transform: ({ scale, translate }: any) =>
         `scale(${scale}) translate(${translate.x}px, ${translate.y}px)`,
+    },
+    MoveModeOverlay: {
+      position: "absolute",
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      background: fade(theme.palette.background.default,0.2),
+      zIndex: 2,
+      cursor: "grab"
     },
     "@media print": {
       Content: {
@@ -70,10 +82,12 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
   const [customOption, setCustomOption] = useState<null | number>(null);
   const [childSize, setChildSize] = useState({ width: 0, height: 0 });
   const [dragging, setDragging] = useState(false);
+  const [moveMode, setMoveMode] = useState(false);
   const mousePosition = useRef({ x: 0, y: 0 });
   const ref = useRef<any>();
   const childRef = useRef<any>();
-  const classes = useStyles({ scale, fitScale, childSize, translate });
+  const moveModeOverlayRef = useRef<any>();
+  const classes = useStyles({ scale, fitScale, childSize, translate, moveMode });
 
   const calcFitScale = useCallback(() => {
     const wrapper = ref.current;
@@ -87,12 +101,14 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
     };
     if (ratio.height < 1 || ratio.width < 1) {
       if (ratio.height < ratio.width) {
-        setFitScale(ratio.height);
+        setFitScale(ratio.height*0.95);
       } else {
-        setFitScale(ratio.width);
+        setFitScale(ratio.width*0.95);
       }
+    } else {
+      setFitScale(1)
     }
-  }, [setScale]);
+  }, [setFitScale]);
 
   const setZoom = useCallback(
     (_option: "fit" | number) => {
@@ -171,6 +187,10 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
   const onDrag = useCallback(
     (event: React.MouseEvent | React.TouchEvent) => {
       event.preventDefault();
+      const child = childRef.current as HTMLDivElement;
+      if(child.contains(event.target as Node) && !moveMode){
+        return;
+      }
       let obj: any;
       if ((event as any).changedTouches) {
         obj = (event as React.TouchEvent).changedTouches[0];
@@ -181,15 +201,16 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
         const { x, y } = mousePosition.current;
         const delta = { x: obj.clientX - x, y: obj.clientY - y };
         mousePosition.current = { x: obj.clientX, y: obj.clientY };
+        const relativeDelta = { x: delta.x/scale, y: delta.y/scale };
         setTranslate((t) => {
           return {
-            x: t.x + delta.x,
-            y: t.y + delta.y,
+            x: t.x + relativeDelta.x,
+            y: t.y + relativeDelta.y,
           };
         });
       }
     },
-    [setTranslate, dragging]
+    [setTranslate, dragging, moveMode]
   );
 
   const onDrop = useCallback(
@@ -211,6 +232,10 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
   const onWheel = (event: React.WheelEvent) => {
     event.preventDefault();
     event.stopPropagation();
+    const child = childRef.current as HTMLDivElement;
+    if(child.contains(event.target as Node) && !moveMode){
+      return;
+    }
     const delta = -event.deltaY / 1000;
     setCustomOption(scale + delta);
   };
@@ -257,10 +282,12 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
           >
             <Remove />
           </Fab>
+          <Fab size="small" color={moveMode? "primary": "default"} onClick={() => setMoveMode(m => !m) } ><PanTool /></Fab>
         </div>
       </div>
       <div ref={childRef} className={classes.Content}>
         {child}
+        {moveMode && <div ref={moveModeOverlayRef} className={classes.MoveModeOverlay} />}
       </div>
     </div>
   );

@@ -45,10 +45,10 @@ export const useImageTextboxes = (imageId: string) => {
             editable.textboxes = textboxes;
             return editable;
         })
-    },[setImage])
+    },[setImage, textboxes])
 
     const getTextboxes = useCallback(()=>{
-        const textboxesCopy = JSON.parse(JSON.stringify(image?.textboxes || [])) as TextBox[];
+        const textboxesCopy = image?.textboxes.map( textbox => textbox.clone() ) || [];
         return textboxesCopy;
     },[image])
 

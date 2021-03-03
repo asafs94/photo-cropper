@@ -1,5 +1,5 @@
 import { makeStyles } from "@material-ui/core";
-import React from "react";
+import React, { useRef } from "react";
 import DisplayText from "../ImageEditor/TextBox/DisplayText";
 import { Position } from "../../types";
 import DraggableBackground from "../DraggableBackground";
@@ -19,6 +19,9 @@ interface Props {
 
 const useStyles = makeStyles((theme) => {
   return {
+    Root:{
+      position: "relative"
+    },
     Content: {
       width: "100%",
       height: "100%",
@@ -38,10 +41,13 @@ export default function AppImage({
   textboxes
 }: Props) {
 
+  const classes = useStyles()
+  const parentRef = useRef<HTMLDivElement | undefined>()
+
   return (
-    <div onContextMenu={onContextMenu} >
+    <div ref={ref => parentRef.current = ref? ref : undefined} onContextMenu={onContextMenu} className={[classes.Root, className].join(' ')} >
       <DraggableBackground
-        className={className}
+        className={classes.Content}
         disabled={cropDisabled}
         src={src}
         setPosition={setCrop}
@@ -50,7 +56,7 @@ export default function AppImage({
         position={crop}
       />
       {textboxes.map((textbox) => (
-        <DisplayText textbox={textbox} key={textbox.id}></DisplayText>
+        <DisplayText textbox={textbox} key={textbox.id} parent={parentRef?.current}></DisplayText>
       ))}
     </div>
   );

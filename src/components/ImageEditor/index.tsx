@@ -1,5 +1,5 @@
 import { Button, Paper } from "@material-ui/core";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { DraggableEventHandler } from "react-draggable";
 import useStyles from "./styles";
 import TextBox from "./TextBox";
@@ -11,14 +11,17 @@ import {
   useImageTextboxes,
 } from "../../utils/hooks/single-image";
 import AppImage from "../AppImage/AppImage";
+import ZoomWrapper from "../ZoomWrapper";
 
-export default function ImageEditor({ imageId }: any) {
-  const classes = useStyles({});
+export default function ImageEditor({ imageId, imageSize }: any) {
+  const classes = useStyles({ imageSize });
   const [selected, setSelected] = useState<string>();
   const { image, setCrop, setZoom } = useEditableImage(imageId);
   const { setTextboxes, submitTextboxes, textboxes } = useImageTextboxes(
     imageId
   );
+
+  const dragParentRef = useRef();
 
   const onSave = useCallback(() => {
     submitTextboxes();
@@ -57,7 +60,7 @@ export default function ImageEditor({ imageId }: any) {
   }, [selected, setTextboxes, getOnlyUsedTextBoxes]);
 
   const addNewTextBox = useCallback(() => {
-    const _textbox = new TextBoxObject({ x: 0, y: -250 });
+    const _textbox = new TextBoxObject({ x: 0, y: 0 });
     setSelected(_textbox.id);
     setTextboxes((_tb) => {
       return [..._tb, _textbox];
@@ -66,12 +69,13 @@ export default function ImageEditor({ imageId }: any) {
 
   const handleDrag: (id: string) => DraggableEventHandler = useCallback(
     (id: string) => (event, data) => {
-      setTextboxes(
-        setItemById(id, (textbox) => {
-          textbox.position = data;
-          return textbox;
-        })
-      );
+      event.stopPropagation()
+        setTextboxes(
+          setItemById(id, (textbox) => {
+            textbox.position = data;
+            return textbox;
+          })
+        );
     },
     [setTextboxes]
   );
@@ -156,7 +160,9 @@ export default function ImageEditor({ imageId }: any) {
         selectedState={selectedTextBoxState}
         setFontSize={setFontSize}
       />
-      <Paper className={classes.Editable} onClick={deselect("")}>
+      <div className={classes.EditableArea}>
+      <ZoomWrapper>
+      <Paper innerRef={dragParentRef} className={classes.Editable} onClick={deselect("")}>
         <AppImage
           cropDisabled={true}
           className={classes.Image}
@@ -177,9 +183,12 @@ export default function ImageEditor({ imageId }: any) {
             handleDrag={handleDrag(textbox.id)}
             position={textbox.position}
             textStyle={textbox.style}
+            parentElement={dragParentRef?.current}
           />
         ))}
       </Paper>
+      </ZoomWrapper>
+      </div>
       <Button
         className={classes.SaveButton}
         onClick={onSave}

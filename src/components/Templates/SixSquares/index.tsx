@@ -4,16 +4,17 @@ import EditableImage from '../../../types/EditableImage';
 import useStyles from './styles'
 
 interface SixSquares_Props {
-    images?: Array<EditableImage>
+    images?: Array<EditableImage>;
+    onImageContextMenu: (imageId: string) => (event: React.MouseEvent) => void;
 }
 
-export default function SixSquares({ images=[] }: SixSquares_Props) {
+export default function SixSquares({ images=[], onImageContextMenu }: SixSquares_Props) {
 
     const classes = useStyles();
     return (
         <div className={classes.Root}>
             {images.map((image, index) => 
-                <AppImageContainer className={classes.Square} id={image.id} key={`${image.id}`} />
+                <AppImageContainer onContextMenu={onImageContextMenu(image.id)} className={classes.Square} id={image.id} key={`${image.id}`} />
             )}
         </div>
     )

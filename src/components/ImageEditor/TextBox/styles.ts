@@ -8,6 +8,11 @@ interface StyleProps {
 
 export default makeStyles<Theme, StyleProps>((theme) => {
   return {
+    Draggable:{
+      position: "absolute",
+      top: 0,
+      left: 0,
+    },
     Root: {
       width: "fit-content",
       height: "fit-content",

@@ -1,6 +1,10 @@
-import { fade, makeStyles } from "@material-ui/core";
+import { fade, makeStyles, Theme } from "@material-ui/core";
 
-export default makeStyles((theme) => {
+interface StyleProps {
+  imageSize: { width: string | number, height: string | number }
+}
+
+export default makeStyles<Theme, StyleProps>((theme) => {
   const size = 450;
   return {
     Root: {
@@ -19,11 +23,17 @@ export default makeStyles((theme) => {
       width: size,
       boxSizing: 'border-box',
     },
-    Editable: {
+    EditableArea: {
       width: size,
       height: size,
+      
+      
+    },
+    Editable:{
       position: "relative",
       boxSizing: 'border-box',
+      height: ({imageSize}) => imageSize.height,
+      width: ({imageSize}) => imageSize.width
     },
     Image: {
       width: "100%",

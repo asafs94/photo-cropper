@@ -26,15 +26,32 @@ function App() {
   const paperRef = useRef<any>();
   const appRef = useRef<any>();
   const classes = useStyles();
+  const imageCurrentSize = "85mm"
   const [drawerOpen, toggleDrawer] = useToggleable(false);
   const [headerNote, setHeaderNote] = useState("");
   const [footerNote, setFooterNote] = useState("");
   const { images, uploadFiles, onClear } = useContext(ImageContext);
-  const [dialogPayload, setDialogPayload] = useState({ open: false });
+  const [dialogPayload, setDialogPayload] = useState<{ open: boolean, imageId?: string }>({ open: false });
   const openContextMenu = useContext(AppContextMenuContext); 
   const smallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
+
+  const openImageContextMenu = (id: string) => async (event: React.MouseEvent) => {
+    const value = await new Promise( (resolve, reject) => {
+      openContextMenu({ event, promise: {resolve, reject}, options: [{ value: 'apply-to-all', text: 'Apply to All' }, { value: 'edit', text: 'Edit' }] })
+    });
+    onContextMenuClick({ imageId: id, value })
+  }
+
+  const onContextMenuClick = ({ imageId, value }: any) =>{
+    switch (value){
+      case "edit": {
+        setDialogPayload({ open: true, imageId });
+      }
+    }
+  }
+
   return (
     <ImageDropZone onDrop={uploadFiles}>
       <div className={classes.Root} ref={appRef}>
@@ -52,7 +69,7 @@ function App() {
               <Typography component="header" className={classes.Note}>
                 <TextWithLineBreaks>{headerNote}</TextWithLineBreaks>
               </Typography>
-              <SixSquares images={images} />
+              <SixSquares images={images} onImageContextMenu={openImageContextMenu}/>
               <Typography component="footer" className={classes.Note}>
                 <TextWithLineBreaks>{footerNote}</TextWithLineBreaks>
               </Typography>
@@ -60,7 +77,7 @@ function App() {
           </ZoomWrapper>
         </main>
         <Dialog open={dialogPayload.open} onClose={()=>setDialogPayload({ open: false })} >
-          <ImageEditor imageId={images[0] && images[0].id || ''} />
+          <ImageEditor imageId={dialogPayload.imageId} imageSize={{ height: imageCurrentSize, width: imageCurrentSize }} />
         </Dialog>
         <Drawer
           className={classes.DrawerWrapper}

@@ -107,4 +107,9 @@ export default class TextBox {
   setFontSize = (fontSize: number) => {
     this.appendStyle({ fontSize });
   }
+
+  clone = () => {
+    const clonedTextbox = new TextBox(this.position, this.content, this.style);
+    return clonedTextbox;
+  }
 }

@@ -27,6 +27,7 @@ export default function AppContextMenu({children}: any) {
         payload.event.preventDefault();
         setPosition({x: payload.event.clientX, y: payload.event.clientY});
         setOptions(payload.options)
+        setPromise(payload.promise);
     }
     
     const closeContextMenu = useCallback(
@@ -39,7 +40,7 @@ export default function AppContextMenu({children}: any) {
 
 
     const handleClick = useCallback((option: Option) => () =>{
-        promise?.resolve(option);
+        promise?.resolve(option.value);
         closeContextMenu();
     }, [promise])
 

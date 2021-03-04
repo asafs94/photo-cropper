@@ -15,12 +15,15 @@ interface Props {
   setZoom: (zoom:number) => void,
   setCrop: (crop: Position) => void,
   textboxes: TextBox[],
+  onClick?: (event: React.MouseEvent) => void 
 }
 
 const useStyles = makeStyles((theme) => {
   return {
     Root:{
-      position: "relative"
+      position: "relative",
+      width: "100%",
+      height: "100%"
     },
     Content: {
       width: "100%",
@@ -38,14 +41,15 @@ export default function AppImage({
   zoom,
   setZoom,
   setCrop,
-  textboxes
+  textboxes,
+  onClick
 }: Props) {
 
   const classes = useStyles()
   const parentRef = useRef<HTMLDivElement | undefined>()
 
   return (
-    <div ref={ref => parentRef.current = ref? ref : undefined} onContextMenu={onContextMenu} className={[classes.Root, className].join(' ')} >
+    <div ref={ref => parentRef.current = ref? ref : undefined} onClick={onClick} onContextMenu={onContextMenu} className={[classes.Root, className].join(' ')} >
       <DraggableBackground
         className={classes.Content}
         disabled={cropDisabled}

@@ -16,7 +16,7 @@ import ZoomWrapper from "../ZoomWrapper";
 export default function ImageEditor({ imageId, imageSize, onClose }: any) {
   const classes = useStyles({ imageSize });
   const [selected, setSelected] = useState<string>();
-  const { image, setCrop, setZoom } = useEditableImage(imageId);
+  const { image, setCrop, setZoom, lock } = useEditableImage(imageId);
   const { setTextboxes, submitTextboxes, textboxes } = useImageTextboxes(
     imageId
   );
@@ -25,6 +25,7 @@ export default function ImageEditor({ imageId, imageSize, onClose }: any) {
 
   const onSave = useCallback(() => {
     submitTextboxes();
+    lock();
     onClose && onClose();
   }, [submitTextboxes, onClose]);
 

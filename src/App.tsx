@@ -20,6 +20,8 @@ import ImageDropZone from "./hoc/ImageDropZone";
 import TextWithLineBreaks from "./components/TextWithLinebreaks";
 import ImageEditor from "./components/ImageEditor";
 import { AppContextMenuContext } from "./hoc/AppContextMenu";
+import { useEditableImage } from "./utils/hooks/single-image";
+import { byId } from "./utils";
 
 
 function App() {
@@ -30,7 +32,7 @@ function App() {
   const [drawerOpen, toggleDrawer] = useToggleable(false);
   const [headerNote, setHeaderNote] = useState("");
   const [footerNote, setFooterNote] = useState("");
-  const { images, uploadFiles, onClear } = useContext(ImageContext);
+  const { images, uploadFiles, onClear, setSingleImage } = useContext(ImageContext);
   const [dialogPayload, setDialogPayload] = useState<{ open: boolean, imageId?: string }>({ open: false });
   const openContextMenu = useContext(AppContextMenuContext); 
   const smallScreen = useMediaQuery((theme: Theme) =>
@@ -38,8 +40,16 @@ function App() {
   );
 
   const openImageContextMenu = (id: string) => async (event: React.MouseEvent) => {
+    const image = images.find(byId(id));
     const value = await new Promise( (resolve, reject) => {
-      openContextMenu({ event, promise: {resolve, reject}, options: [{ value: 'apply-to-all', text: 'Apply to All' }, { value: 'edit', text: 'Edit' }] })
+      openContextMenu({ 
+        event, 
+        promise: {resolve, reject}, 
+        options: [
+          { value: 'apply-to-all', text: 'Apply to All' }, 
+          { value: 'edit', text: 'Edit' },
+          { value: image?.locked? 'unlock' : 'lock', text: image?.locked? "Unlock" : "Lock"}
+        ] })
     });
     onContextMenuClick({ imageId: id, value })
   }
@@ -48,6 +58,24 @@ function App() {
     switch (value){
       case "edit": {
         setDialogPayload({ open: true, imageId });
+        break;
+      }
+      case "lock": {
+        setSingleImage(imageId)(
+          image => { 
+            image.locked = true; 
+            return image; 
+        });
+        break;
+      }
+      case "unlock": {
+        setSingleImage(imageId)(
+          image => {
+            image.locked = false;
+            return image;
+          }
+        )
+        break;
       }
     }
   }

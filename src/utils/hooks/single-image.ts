@@ -29,9 +29,22 @@ export const useEditableImage = (id: string) => {
        })
     }, [setImage, id])
 
+    const lock = useCallback(()=>{
+        setImage(c => {
+            c.locked = true;
+            return c;
+        })
+    },[setImage, id])
+
+    const unlock = useCallback(()=>{
+        setImage(c => {
+            c.locked = false;
+            return c;
+        })
+    },[setImage, id])
 
 
-    return { setCrop, image, setZoom }
+    return { setCrop, image, setZoom, lock, unlock }
 
 }
 

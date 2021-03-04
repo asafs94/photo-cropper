@@ -1,32 +1,41 @@
-import React from "react";
+import React, { useContext } from "react";
 import AppImage from "../components/AppImage/AppImage";
 import { useEditableImage } from "../utils/hooks/single-image";
+import { AlertContext } from '../hoc/AppAlerts';
 
 export default function AppImageContainer({
   id,
   className,
   cropDisabled,
-  onContextMenu,
+  onContextMenu
 }: any) {
-  const { image, setCrop: setPosition, setZoom } = useEditableImage(id); 
-
+  const { image, setCrop: setPosition, setZoom, lock, unlock } = useEditableImage(id); 
+  const setAlert = useContext(AlertContext)
   if (!image) {
     return null;
   }
 
-  const { zoom, crop, url, textboxes } = image;
+  const { zoom, crop, url, textboxes, locked } = image;
+  
+
+  const handleClick = (event: React.MouseEvent) => {
+   if(locked){
+    setAlert({ message: `Image is locked. Right click to unlock.`, autoHideDuration: 4000  })
+   }
+  }
 
   return (
-    <AppImage
-      crop={crop}
-      zoom={zoom}
-      setCrop={setPosition}
-      setZoom={setZoom}
-      textboxes={textboxes}
-      cropDisabled={cropDisabled}
-      className={className}
-      src={url}
-      onContextMenu={onContextMenu}
-    />
+        <AppImage
+          crop={crop}
+          zoom={zoom}
+          setCrop={setPosition}
+          setZoom={setZoom}
+          textboxes={textboxes}
+          cropDisabled={locked || cropDisabled}
+          className={className}
+          src={url}
+          onContextMenu={onContextMenu}
+          onClick={handleClick}
+        />
   );
 }

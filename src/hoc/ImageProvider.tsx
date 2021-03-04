@@ -1,6 +1,7 @@
-import React, { createContext, useCallback, useEffect, useState } from 'react'
+import React, { createContext, SetStateAction, useCallback, useEffect, useState } from 'react'
 import EditableImage from '../types/EditableImage';
 import { PlaceholderImage } from '../types/Placeholder';
+import { setItemById } from '../utils';
 
 interface ImageContextValue {
     order?: Array<any>,
@@ -8,10 +9,11 @@ interface ImageContextValue {
     images: Array<EditableImage>,
     uploadFiles?: (files: FileList) => void,
     setImages: React.Dispatch<React.SetStateAction<EditableImage[]>>,
-    onClear: () => void
+    onClear: () => void,
+    setSingleImage: (id: string) => (setAction: SetStateAction<EditableImage>) => void
 }
 
-export const ImageContext = createContext<ImageContextValue>({ images: [], setImages: () => { }, onClear: () => {} });
+export const ImageContext = createContext<ImageContextValue>({ images: [], setImages: () => { }, onClear: () => {}, setSingleImage: () => () => {} });
 
 interface ImageProviderProps {
     children: React.ReactNode
@@ -49,8 +51,12 @@ export default function ImageProvider({ children }: ImageProviderProps) {
         setImages([]);
     },[setImages])
 
+    const setSingleImage = useCallback((id: string)=>(setAction: SetStateAction<EditableImage>)=>{
+        setImages(setItemById(id, setAction));
+    },[setImages])
+
     return (
-        <ImageContext.Provider value={{ order, setOrder, images, uploadFiles, setImages, onClear }}>
+        <ImageContext.Provider value={{ order, setOrder, images, uploadFiles, setImages, onClear, setSingleImage }}>
             {children}
         </ImageContext.Provider>
     )

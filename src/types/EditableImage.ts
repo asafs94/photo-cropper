@@ -13,11 +13,13 @@ interface ConstructorPayload {
 
 export default class EditableImage extends CroppableImage {
     private _textboxes: Array<TextBox> 
+    locked: boolean;
 
     constructor(payload: ConstructorPayload){
         const { file, crop, zoom, url } = payload;
         super(file, crop, zoom, url);
         this._textboxes = [];
+        this.locked = false;
     }
 
     set textboxes( textboxes: TextBox[] ){

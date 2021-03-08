@@ -38,3 +38,8 @@ export function getItemById<T extends IdentifiedItem>(id: any, array: T[]){
 export const byId = (id: any) => (item: IdentifiedItem) => {
     return item.id === id;
 }
+
+
+export function removeDuplicates<T>(arr: Array<T>){
+    return Array.from(new Set(arr));
+}

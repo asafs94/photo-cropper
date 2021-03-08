@@ -7,27 +7,32 @@ const useStyles = makeStyles((theme) => {
       display: "flex",
       alignItems: 'center',
       boxSizing: "border-box",
+      flexWrap: "wrap",
       padding: gap,
-      '&>*:not(:first-child)':{
-          marginLeft: gap,
-      }
     },
     Button:{
-        fontSize: 'calc(1rem + 2px)',
-        lineHeight: 1
-    },
-    Input: {
-        border: `1px solid ${theme.palette.divider}`,
-        borderRadius: 4,
-        maxHeight: 30,
-        boxSizing: 'border-box',
         fontSize: 'calc(1rem)',
         lineHeight: 1,
-        padding: 0,
-        paddingLeft: theme.spacing(0.5),
-        '& input':{
-          padding: `5px 0 6px`,
-        }
+        minHeight: "100%"
+    },
+    FontSelect:{
+      width: "100%",
+      height: "100%"
+    },
+    TextField: {
+      width: "100%",
+      height: "100%",
+      boxSizing: "border-box",
+      display: "flex",
+      border: '1px solid '+theme.palette.divider,
+      borderRadius: 4,
+      "&:focus-within":{
+        borderColor: theme.palette.primary.main,
+        borderWidth: 3, 
+      },
+      "& input":{
+        padding: "3px 8px",
+      },
     }
   };
 });

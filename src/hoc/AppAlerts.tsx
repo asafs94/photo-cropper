@@ -8,7 +8,7 @@ interface Props {
 
 type Alert = {
     message: string,
-    autoHideDuration?: number,
+    autoHideDuration?: number | null,
 }
 
 export const AlertContext = React.createContext<(alert:Alert) => void>(()=>{})
@@ -16,11 +16,12 @@ export const AlertContext = React.createContext<(alert:Alert) => void>(()=>{})
 export default function AppAlertProvider({children}: Props) {
     
     const [alert, setAlert] = useState<Alert>();
-    
+    const autoHideDuration = typeof alert?.autoHideDuration === "undefined"? 1000 : alert?.autoHideDuration;
+
     return (
         <AlertContext.Provider value={setAlert}>
             {children}
-            <Snackbar autoHideDuration={alert?.autoHideDuration || 1000} message={alert?.message || ''} open={Boolean(alert)} onClose={()=>setAlert(undefined)} />
+            <Snackbar autoHideDuration={autoHideDuration} message={alert?.message || ''} open={Boolean(alert)} onClose={()=>setAlert(undefined)} />
         </AlertContext.Provider>
     )
 }

@@ -20,7 +20,6 @@ import ImageDropZone from "./hoc/ImageDropZone";
 import TextWithLineBreaks from "./components/TextWithLinebreaks";
 import ImageEditor from "./components/ImageEditor";
 import { AppContextMenuContext } from "./hoc/AppContextMenu";
-import { useEditableImage } from "./utils/hooks/single-image";
 import { byId } from "./utils";
 
 

@@ -82,10 +82,10 @@ export default function ImageEditor({ imageId, imageSize, onClose }: any) {
     [setTextboxes]
   );
 
-  const toggleBold = useCallback(() => {
+  const toggleBold = useCallback((value?: string | number) => {
     setTextboxes(
       setItemById(selected, (textbox) => {
-        textbox.toggleBold();
+        textbox.toggleBold(value);
         return textbox;
       })
     );
@@ -141,9 +141,22 @@ export default function ImageEditor({ imageId, imageSize, onClose }: any) {
     [setTextboxes, selected]
   );
 
-  const selectedTextBoxState = textboxes.find(
+  const setFontFamily = useCallback(
+    (fontFamily: string) => {
+      setTextboxes(
+        setItemById(selected, (item) => {
+          item.setFontFamily(fontFamily);
+          return item;
+        })
+      );
+    },
+    [setTextboxes, selected]
+  )
+
+  const selectedTextBox = textboxes.find(
     (textbox) => textbox.id === selected
-  )?.state;
+  );
+  const selectedTextBoxState = { ...selectedTextBox?.state, value: selectedTextBox?.content, style: selectedTextBox?.style }
 
   if(!image){
     return null;
@@ -161,6 +174,7 @@ export default function ImageEditor({ imageId, imageSize, onClose }: any) {
         alignText={alignTextBox}
         selectedState={selectedTextBoxState}
         setFontSize={setFontSize}
+        setFontFamily={setFontFamily}
       />
       <div className={classes.EditableArea}>
       <ZoomWrapper>

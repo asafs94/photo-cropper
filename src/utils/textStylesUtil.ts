@@ -60,6 +60,7 @@ export const parseStyleToState = (style: CSSProperties = {}) => {
     fontWeight,
     textAlign,
     fontSize,
+    fontFamily
   } = style;
   return {
     bold: isBold(fontWeight),
@@ -67,5 +68,6 @@ export const parseStyleToState = (style: CSSProperties = {}) => {
     italic: isItalic(fontStyle),
     fontSize: parseFontSizetoNumber(fontSize),
     alignment: getAlignment(textAlign),
+    fontFamily: fontFamily || "Roboto",
   };
 };

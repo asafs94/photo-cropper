@@ -14,6 +14,7 @@ export default class TextBox {
     italic: boolean;
     alignment: "right" | "left" | "center";
     fontSize: number;
+    fontFamily: string;
   };
 
   constructor(
@@ -24,12 +25,16 @@ export default class TextBox {
   ) {
     this._position = position || { x: 0, y: 0 };
     this._style = style || {};
+    if(!this._style.fontFamily){
+      this._style.fontFamily = "Roboto"
+    }
     this._state = {
       bold: isBold(style?.fontWeight),
       underlined: isUnderlined(style?.textDecoration),
       italic: false,
       alignment: "left",
       fontSize: 14,
+      fontFamily: "Roboto"
     };
     this._id = id || v4();
     this.content = content || "";
@@ -64,12 +69,11 @@ export default class TextBox {
     this.style = { ...this.style, ...style };
   }
 
-  toggleBold = (forceValue?: boolean) => {
+  toggleBold = (forceValue?: number | string) => {
     const valueExists = typeof forceValue !== "undefined";
     let style = {};
     if (valueExists) {
-      const isBold = forceValue;
-      style = { fontWeight: isBold ? "bold" : "unset" };
+      style = { fontWeight: forceValue };
     } else {
       style = { fontWeight: this.state.bold ? "unset" : "bold" };
     }
@@ -106,6 +110,10 @@ export default class TextBox {
 
   setFontSize = (fontSize: number) => {
     this.appendStyle({ fontSize });
+  }
+  
+  setFontFamily = (fontFamily: string) => {
+    this.appendStyle({ fontFamily });
   }
 
   clone = () => {

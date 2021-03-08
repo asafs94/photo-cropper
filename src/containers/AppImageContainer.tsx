@@ -36,6 +36,7 @@ export default function AppImageContainer({
           src={url}
           onContextMenu={onContextMenu}
           onClick={handleClick}
+          locked={locked}
         />
   );
 }

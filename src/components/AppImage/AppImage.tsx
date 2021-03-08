@@ -4,6 +4,8 @@ import DisplayText from "../ImageEditor/TextBox/DisplayText";
 import { Position } from "../../types";
 import DraggableBackground from "../DraggableBackground";
 import TextBox from "../../types/TextBox";
+import IconOverlay from "../IconOverLay"
+import { Lock } from "@material-ui/icons";
 
 interface Props {
   className?: string;
@@ -15,7 +17,8 @@ interface Props {
   setZoom: (zoom:number) => void,
   setCrop: (crop: Position) => void,
   textboxes: TextBox[],
-  onClick?: (event: React.MouseEvent) => void 
+  onClick?: (event: React.MouseEvent) => void,
+  locked?: boolean
 }
 
 const useStyles = makeStyles((theme) => {
@@ -42,7 +45,8 @@ export default function AppImage({
   setZoom,
   setCrop,
   textboxes,
-  onClick
+  onClick,
+  locked=false
 }: Props) {
 
   const classes = useStyles()
@@ -62,6 +66,7 @@ export default function AppImage({
       {textboxes.map((textbox) => (
         <DisplayText textbox={textbox} key={textbox.id} parent={parentRef?.current}></DisplayText>
       ))}
+      {locked && <IconOverlay IconComponent={Lock}  />}
     </div>
   );
 }

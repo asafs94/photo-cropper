@@ -23,7 +23,8 @@ export default function AppFonts({ children }: Props) {
     const [fontsByLanguage, setFontsByLanguage] = useState<Map<string, string[]>>(new Map<string, string[]>());
 
     useEffect(()=>{
-        let _languages = navigator.languages.map(localeCodeToEnglish);   //get all navigator locales
+        let _languages = navigator.languages.map(localeCodeToEnglish);    //get all navigator locales
+        _languages.push('hebrew')                                         //force add "hebrew" - by demand of client.
         _languages = removeDuplicates(_languages);                        //remove duplicates
         _languages = _languages.filter(l => l !== "english");             //remove english (its default in google fonts)
         setLanguanges(_languages);           

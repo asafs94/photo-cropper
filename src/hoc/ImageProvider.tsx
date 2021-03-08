@@ -1,7 +1,7 @@
 import React, { createContext, SetStateAction, useCallback, useEffect, useState } from 'react'
 import EditableImage from '../types/EditableImage';
 import { PlaceholderImage } from '../types/Placeholder';
-import { setItemById } from '../utils';
+import { appendImages, setItemById } from '../utils';
 
 interface ImageContextValue {
     order?: Array<any>,
@@ -25,10 +25,11 @@ export default function ImageProvider({ children }: ImageProviderProps) {
     const [order, setOrder] = useState<Array<any>>([]);
     const maxAmount = 6;
 
-    const uploadFiles = useCallback((files: FileList) => {
-        let _images = Array.from(files).map(file => new EditableImage({file}));
-        setImages(_images);
-    }, [setImages])
+    const uploadFiles = useCallback( async (files: FileList) => {
+        let newImages = Array.from(files).map(file => new EditableImage({file}));
+        const allImages = await appendImages(images, newImages, maxAmount, (oldA, newA, max)=> newA )
+        setImages(allImages);
+    }, [setImages, images])
 
     useEffect(()=>{
         if(images.length < maxAmount){

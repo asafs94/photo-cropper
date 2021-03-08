@@ -1,4 +1,6 @@
 import { IdentifiedItem, setStatePayload } from "../types";
+import EditableImage from "../types/EditableImage";
+import { PlaceholderImage } from "../types/Placeholder";
 
 
 export const isImageFile = (file: File) => {
@@ -42,4 +44,13 @@ export const byId = (id: any) => (item: IdentifiedItem) => {
 
 export function removeDuplicates<T>(arr: Array<T>){
     return Array.from(new Set(arr));
+}
+
+
+export async function appendImages<EditableImage>( oldArray: EditableImage[], newArray: EditableImage[], maxLength: number, solveConflict: (oldArray: EditableImage[], newArray: EditableImage[], maxLength: number) => Promise<EditableImage[]> | EditableImage[] ) {
+    const oldArray_withoutPlaceholders = oldArray.filter( image => !(image instanceof PlaceholderImage) );
+    if( oldArray_withoutPlaceholders.length + newArray.length > maxLength ){
+        return await solveConflict(oldArray, newArray, maxLength);
+    };
+    return [...oldArray_withoutPlaceholders, ...newArray];
 }

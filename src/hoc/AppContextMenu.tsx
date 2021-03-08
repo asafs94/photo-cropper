@@ -5,7 +5,7 @@ import { Position } from '../types';
 export const AppContextMenuContext = createContext<(payload: ContextMenuPayload) => void>(()=>{})
 
 interface Option {
-    value: string, text: string
+    value: string, text: string, disabled?: boolean
 }
 
 interface PromiseHandler {
@@ -68,7 +68,7 @@ export default function AppContextMenu({children}: any) {
             anchorReference="anchorPosition"
             anchorPosition={position? { top: position.y, left: position.x } : undefined} 
           >
-              {options.map(option => <MenuItem key={option.value} onClick={handleClick(option)}>{option.text}</MenuItem>)}
+              {options.map(option => <MenuItem key={option.value} disabled={option.disabled} onClick={handleClick(option)}>{option.text}</MenuItem>)}
         </Menu> 
         </AppContextMenuContext.Provider>
     )

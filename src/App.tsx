@@ -45,7 +45,7 @@ function App() {
         event, 
         promise: {resolve, reject}, 
         options: [
-          { value: 'apply-to-all', text: 'Apply to All' }, 
+          { value: 'apply-to-all', text: 'Apply to All', disabled: true }, 
           { value: 'edit', text: 'Edit' },
           { value: image?.locked? 'unlock' : 'lock', text: image?.locked? "Unlock" : "Lock"}
         ] })

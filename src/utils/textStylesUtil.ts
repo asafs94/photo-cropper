@@ -1,4 +1,6 @@
+import { hexToRgb } from "@material-ui/core";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
+import { colorValues } from "./colors";
 
 export const isBold = (fontWeight: string | number | undefined) => {
   if (!fontWeight) {
@@ -53,6 +55,11 @@ export const getAlignment: (
   }
 };
 
+export const colorToRgba = ( color: string = "rgb(0,0,0)" ) => {
+ const [r,g,b,a] = colorValues(color) || [0,0,0,0];
+ return {r,g,b,a};
+}
+
 export const parseStyleToState = (style: CSSProperties = {}) => {
   const {
     textDecorationLine,
@@ -60,7 +67,8 @@ export const parseStyleToState = (style: CSSProperties = {}) => {
     fontWeight,
     textAlign,
     fontSize,
-    fontFamily
+    fontFamily,
+    color
   } = style;
   return {
     bold: isBold(fontWeight),
@@ -69,5 +77,6 @@ export const parseStyleToState = (style: CSSProperties = {}) => {
     fontSize: parseFontSizetoNumber(fontSize),
     alignment: getAlignment(textAlign),
     fontFamily: fontFamily || "Roboto",
+    color: colorToRgba(color)
   };
 };

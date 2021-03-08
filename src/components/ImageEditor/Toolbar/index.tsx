@@ -22,6 +22,7 @@ import {
 import GoogleFont from "../../../types/GoogleFont";
 import FontSelect from "../../FontSelect";
 import { useAppFonts } from "../../../utils/hooks/fonts";
+import ColorPicker from "../ColorPicker";
 // import FontSelect from "../../FontSelect";
 
 interface Props {
@@ -35,6 +36,7 @@ interface Props {
   selectedState: any;
   setFontSize: (fontSize: number) => void;
   setFontFamily: (fontFamily: string) => void;
+  setColor: (color: string) => void
 }
 
 export default function Toolbar({
@@ -48,10 +50,11 @@ export default function Toolbar({
   setFontFamily,
   selectedState,
   setFontSize,
+  setColor,
 }: Props) {
   const classes = useStyles();
   const rootClassName = [classes.Root, className].join(" ");
-  const { bold, italic, underlined, alignment, fontSize, fontFamily } = selectedState || {};
+  const { bold, italic, underlined, alignment, fontSize, fontFamily, color } = selectedState || {};
   const { fontsByLanguage } = useAppFonts()
 
   const getProps: (
@@ -80,7 +83,7 @@ export default function Toolbar({
 
   return (
     <Paper className={rootClassName}>
-      <Grid container spacing={1}>
+      <Grid container spacing={1} alignItems='center'>
         <Grid item xs={2}>
           <Button
             className={classes.Button}
@@ -104,6 +107,9 @@ export default function Toolbar({
                 setFontSize(Number(event.target.value));
               }} />
           </div>
+        </Grid>
+        <Grid item>
+          <ColorPicker disabled={!selected} className={classes.Button} color={color} onChange={setColor} />
         </Grid>
         <Grid item>
           <ButtonGroup disabled={!selected}>

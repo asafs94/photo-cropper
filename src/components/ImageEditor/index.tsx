@@ -153,6 +153,15 @@ export default function ImageEditor({ imageId, imageSize, onClose }: any) {
     [setTextboxes, selected]
   )
 
+  const setColor = useCallback((color)=>{
+    setTextboxes(
+      setItemById(selected, (item)=> {
+        item.setColor(color)
+        return item;
+      })
+    )
+  },[setTextboxes, selected])
+
   const selectedTextBox = textboxes.find(
     (textbox) => textbox.id === selected
   );
@@ -175,6 +184,7 @@ export default function ImageEditor({ imageId, imageSize, onClose }: any) {
         selectedState={selectedTextBoxState}
         setFontSize={setFontSize}
         setFontFamily={setFontFamily}
+        setColor={setColor}
       />
       <div className={classes.EditableArea}>
       <ZoomWrapper>

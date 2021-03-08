@@ -1,4 +1,5 @@
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
+import { Color } from "react-color";
 import { v4 } from "uuid";
 import { Position } from ".";
 import { isBold, isUnderlined, parseStyleToState } from "../utils/textStylesUtil";
@@ -15,6 +16,7 @@ export default class TextBox {
     alignment: "right" | "left" | "center";
     fontSize: number;
     fontFamily: string;
+    color: Color,
   };
 
   constructor(
@@ -34,7 +36,8 @@ export default class TextBox {
       italic: false,
       alignment: "left",
       fontSize: 14,
-      fontFamily: "Roboto"
+      fontFamily: "Roboto",
+      color: { r: 0, g: 0, b: 0, a: 1 }
     };
     this._id = id || v4();
     this.content = content || "";
@@ -114,6 +117,10 @@ export default class TextBox {
   
   setFontFamily = (fontFamily: string) => {
     this.appendStyle({ fontFamily });
+  }
+
+  setColor = (color: string) => {
+    this.appendStyle({ color });
   }
 
   clone = () => {

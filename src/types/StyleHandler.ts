@@ -1,12 +1,24 @@
 import { CSSProperties } from "@material-ui/styles";
 import { RGBColor } from "react-color";
 import { HorizontalAlignment } from ".";
+import { rgbColorsAreEqual } from "../utils/textStylesUtil";
 import { FontWeight, TextShadow, TextShadowPayload } from "./StylesDefinitions";
 import TextState from "./TextboxState";
 
 export default class StyleHandler {
     private _state: TextState;
     private _style: CSSProperties;
+
+    isEqual(s2: StyleHandler){
+        const primitiveKeys = ["alignment", "italic", "fontSize", "underlined", "fontFamily"] as const;
+        const allPrimitivesAreEqual = primitiveKeys.every( key => {
+            return s2.state[key] === this.state[key];
+        });
+        const colorsAreEqual = rgbColorsAreEqual(this.state.color, s2.state.color)
+        const shadowsAreEqual = this.state.shadow.isEqual(s2.state.shadow)
+        const fontWeightsEqual = this.state.bold.value === s2.state.bold.value;
+        return allPrimitivesAreEqual && shadowsAreEqual && colorsAreEqual  && fontWeightsEqual;
+    }
 
     constructor( state: TextState ){
        this._state = state;

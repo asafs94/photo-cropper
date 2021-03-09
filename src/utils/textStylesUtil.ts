@@ -1,4 +1,5 @@
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
+import { RGBColor } from "react-color";
 import { colorValues } from "./colors";
 
 export const isBold = (fontWeight: string | number | undefined) => {
@@ -79,3 +80,11 @@ export const parseStyleToState = (style: CSSProperties = {}) => {
     color: colorToRgba(color)
   };
 };
+
+
+export const rgbColorsAreEqual = (...colors: RGBColor[]) => {
+  const [color1, ...rest] = colors;
+  return rest.every( color2 => {
+    return color1.r === color2.r && color1.g === color2.g && color1.b === color2.b && color1.a === color2.a;
+  })
+}

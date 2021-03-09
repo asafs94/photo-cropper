@@ -33,6 +33,7 @@ function App() {
   const [footerNote, setFooterNote] = useState("");
   const { images, uploadFiles, onClear, setSingleImage } = useContext(ImageContext);
   const [dialogPayload, setDialogPayload] = useState<{ open: boolean, imageId?: string }>({ open: false });
+  const [closeEditor, setCloseEditor] = useState< {resolve: Function} | null>(null);
   const openContextMenu = useContext(AppContextMenuContext); 
   const smallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
@@ -79,6 +80,16 @@ function App() {
     }
   }
 
+  const initEditorCloseRequest = () => {
+    new Promise<any>( (resolve) => {
+      setCloseEditor({ resolve });
+    }).then(() => {
+      setDialogPayload({ open: false });
+    }).finally( ()=>{
+      setCloseEditor(null);
+    })
+  }
+
   return (
     <ImageDropZone onDrop={uploadFiles}>
       <div className={classes.Root} ref={appRef}>
@@ -103,8 +114,12 @@ function App() {
             </A4>
           </ZoomWrapper>
         </main>
-        <Dialog open={dialogPayload.open} onClose={()=>setDialogPayload({ open: false })} >
-          <ImageEditor imageId={dialogPayload.imageId} imageSize={{ height: imageCurrentSize, width: imageCurrentSize }} onClose={()=>setDialogPayload({ open: false })} />
+        <Dialog open={dialogPayload.open} onClose={initEditorCloseRequest} >
+          <ImageEditor 
+            imageId={dialogPayload.imageId} 
+            imageSize={{ height: imageCurrentSize, width: imageCurrentSize }} 
+            onClose={()=>setDialogPayload({ open: false })} 
+            closeEditor={closeEditor} />
         </Dialog>
         <Drawer
           className={classes.DrawerWrapper}

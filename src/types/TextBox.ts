@@ -1,6 +1,7 @@
 import { RGBColor } from "react-color";
 import { v4 } from "uuid";
 import { HorizontalAlignment, Position } from ".";
+import { positionsAreEqual } from "../utils";
 import StyleHandler from "./StyleHandler";
 import { FontWeight, FontWeightHandler, TextShadow } from "./StylesDefinitions";
 import TextState from "./TextboxState";
@@ -11,6 +12,24 @@ export default class TextBox {
   private _position: Position;
   content: string;
   private styleHandler: StyleHandler
+
+
+  isEqual( t2: TextBox ){
+    return this.id === t2.id;
+  }
+
+  /**
+   * Checks by values if two textboxes are the same. (not by id).
+   * @param t1 
+   * @param t2 
+   */
+  isEqualbyValues( t2: TextBox ){
+    const t1 = this;
+    const equalPositions = positionsAreEqual(t1.position, t2.position);
+    const equalContent = t1.content === t2.content;
+    const equalStyleHandlerStates = t1.styleHandler.isEqual(t2.styleHandler);
+    return equalContent && equalPositions && equalStyleHandlerStates;
+  }
 
   constructor(
     position?: Position,

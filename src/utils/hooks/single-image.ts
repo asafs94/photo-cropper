@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react"
+import { SetStateAction, useCallback, useContext, useEffect, useState } from "react"
 import { useSingle } from ".";
 import { ImageContext } from "../../hoc/ImageProvider"
 import { Position } from "../../types";
@@ -52,6 +52,7 @@ export const useEditableImage = (id: string) => {
 export const useImageTextboxes = (imageId: string) => {
     const [ image, setImage ] = useSingleEditableImage(imageId);
     const [ textboxes, setTextboxes ] = useState<TextBox[]>([]);
+    const [ dirty, setDirty ] = useState<boolean>(false)
 
     const submitTextboxes = useCallback(()=>{
         setImage(editable => {
@@ -70,7 +71,20 @@ export const useImageTextboxes = (imageId: string) => {
         setTextboxes(getTextboxes());
     },[setTextboxes, getTextboxes]);
 
-    return { textboxes, setTextboxes, submitTextboxes }
+    useEffect(()=>{
+        if(image){
+            setDirty(didTextboxesChange(image.textboxes, textboxes));
+        }
+    }, [setDirty, image, textboxes])
+
+    const didTextboxesChange = useCallback((textboxes1: TextBox[], textboxes2: TextBox[])=>{
+        if(textboxes1.length !== textboxes2.length){
+            return true;
+        }
+        return textboxes1.some( (t1,index) => !textboxes1[index].isEqualbyValues(textboxes2[index]) );
+    },[])
+
+    return { textboxes, setTextboxes, submitTextboxes, dirty }
 
  }
 

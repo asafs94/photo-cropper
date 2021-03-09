@@ -1,4 +1,5 @@
 import { RGBColor } from "react-color";
+import { rgbColorsAreEqual } from "../utils/textStylesUtil";
 
 export type TextShadowPayload = {
     h: number,
@@ -8,6 +9,13 @@ export type TextShadowPayload = {
 }
 
 export class TextShadow {
+
+    isEqual(t2: TextShadow){
+        const { h, v,blurRadius, color } = this;        
+        const equalColors = !color && !t2.color || rgbColorsAreEqual(color as RGBColor, t2.color as RGBColor);
+        return  h === t2.h && v === t2.v && blurRadius === t2.blurRadius && equalColors
+    }
+
     /**
          * The position of the horizontal shadow in pixels. Negative values are allowed.
          */

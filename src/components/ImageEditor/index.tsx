@@ -1,4 +1,4 @@
-import { Button, Paper } from "@material-ui/core";
+import { Button, Dialog, DialogActions, DialogTitle, Paper } from "@material-ui/core";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { DraggableEventHandler } from "react-draggable";
 import useStyles from "./styles";
@@ -13,23 +13,47 @@ import {
 import AppImage from "../AppImage/AppImage";
 import ZoomWrapper from "../ZoomWrapper";
 import useSingleTextbox from "../../utils/hooks/single-textbox";
+import { useStateWithPromise } from "../../utils/hooks";
 
-export default function ImageEditor({ imageId, imageSize, onClose }: any) {
+export default function ImageEditor({ imageId, imageSize, onClose, closeEditor }: any) {
   const classes = useStyles({ imageSize });
   const [selected, setSelected] = useState<string>();
+  const [saveBeforeExitDialog, setSaveBeforeExitDialog] = useStateWithPromise<boolean>(false);
   const { image, setCrop, setZoom, lock } = useEditableImage(imageId);
-  const { setTextboxes, submitTextboxes, textboxes } = useImageTextboxes(
+  const { setTextboxes, submitTextboxes, textboxes, dirty } = useImageTextboxes(
     imageId
   );
   const { textbox: selectedTextbox, setAlignment, setColor, setFontFamily, setFontSize, toggleStyle } = useSingleTextbox(selected, textboxes, setTextboxes);
   const selectedTextboxHandlers = { setAlignment, setColor, setFontFamily, setFontSize, toggleStyle };
   const dragParentRef = useRef();
 
-  const onSave = useCallback(() => {
+  useEffect(()=>{
+    if(closeEditor){
+      if(dirty){
+        setSaveBeforeExitDialog(true);
+      } else {
+        closeEditor.resolve();
+      }
+    }
+  },[closeEditor, dirty]);
+
+  const save = useCallback(()=>{
     submitTextboxes();
     lock();
+  },[submitTextboxes, lock]);
+  
+  const onDialogResponse = useCallback((response: "discard" | "save") => async () => {
+    if(response === "save"){
+      save();
+    }
+    await setSaveBeforeExitDialog(false);
+    closeEditor.resolve();
+  },[save, setSaveBeforeExitDialog, closeEditor])
+
+  const onSave = useCallback(() => {
+    save();
     onClose && onClose();
-  }, [submitTextboxes, onClose]);
+  }, [save, onClose]);
 
   const setHtml = useCallback(
     (id: string) => (_content: string) => {
@@ -142,6 +166,13 @@ export default function ImageEditor({ imageId, imageSize, onClose }: any) {
       >
         Save
       </Button>
+      <Dialog open={saveBeforeExitDialog}>
+        <DialogTitle>Should save changes?</DialogTitle>
+        <DialogActions>
+          <Button onClick={onDialogResponse("discard")}>Discard</Button>
+          <Button color="primary" onClick={onDialogResponse("save")}>Save Changes</Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 }

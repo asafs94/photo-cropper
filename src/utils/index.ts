@@ -1,4 +1,4 @@
-import { IdentifiedItem, setStatePayload } from "../types";
+import { IdentifiedItem, Position, setStatePayload } from "../types";
 import { PlaceholderImage } from "../types/Placeholder";
 
 
@@ -56,4 +56,9 @@ export async function appendImages<EditableImage>( oldArray: EditableImage[], ne
 
 export function capitalize( str: string ){
     return str.slice(0,1).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+
+export function positionsAreEqual( p1: Position, p2: Position ) {
+    return p1.x === p2.x && p1.y === p2.y;
 }

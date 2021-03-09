@@ -13,12 +13,11 @@ const useStyles = makeStyles((theme)=>{
             transition: 'opacity 300ms ease-in-out',
             padding: theme.spacing(5),
             "&:hover":{
-                background: theme.palette.text.disabled,
                 opacity: 0.5
             },
         },
         Icon:{
-            color: theme.palette.background.paper,
+            color: theme.palette.text.disabled,
             width: "100%",
             height: "100%"
         },

@@ -1,44 +1,34 @@
-import { CSSProperties } from "@material-ui/core/styles/withStyles";
-import { Color } from "react-color";
+import { RGBColor } from "react-color";
 import { v4 } from "uuid";
-import { Position } from ".";
-import { isBold, isUnderlined, parseStyleToState } from "../utils/textStylesUtil";
+import { HorizontalAlignment, Position } from ".";
+import StyleHandler from "./StyleHandler";
+import { FontWeight, FontWeightHandler, TextShadow } from "./StylesDefinitions";
+import TextState from "./TextboxState";
+
 
 export default class TextBox {
   private _id: string;
-  private _style: CSSProperties;
   private _position: Position;
   content: string;
-  private _state: {
-    bold: boolean;
-    underlined: boolean;
-    italic: boolean;
-    alignment: "right" | "left" | "center";
-    fontSize: number;
-    fontFamily: string;
-    color: Color,
-  };
+  private styleHandler: StyleHandler
 
   constructor(
     position?: Position,
     content?: string,
-    style?: CSSProperties,
+    styleHandler?: StyleHandler,
     id?: string
   ) {
     this._position = position || { x: 0, y: 0 };
-    this._style = style || {};
-    if(!this._style.fontFamily){
-      this._style.fontFamily = "Roboto"
-    }
-    this._state = {
-      bold: isBold(style?.fontWeight),
-      underlined: isUnderlined(style?.textDecoration),
+    this.styleHandler = styleHandler ||  new StyleHandler({
+      bold: new FontWeightHandler(400),
+      underlined: false,
       italic: false,
       alignment: "left",
-      fontSize: 14,
+      fontSize: 20,
       fontFamily: "Roboto",
-      color: { r: 0, g: 0, b: 0, a: 1 }
-    };
+      color: { r: 0, g: 0, b: 0, a: 1 },
+      shadow: new TextShadow(0,0,0),
+    });
     this._id = id || v4();
     this.content = content || "";
   }
@@ -48,12 +38,15 @@ export default class TextBox {
   }
 
   get style() {
-    return this._style;
+    return this.styleHandler.style;
   }
 
-  set style(style: CSSProperties) {
-    this._state = parseStyleToState(style);
-    this._style = style;
+  get state(){
+    return this.styleHandler.state;
+  }
+
+  setStyle( partialStyle: Partial<TextState> ){
+    this.styleHandler.setState(partialStyle)
   }
 
   get position() {
@@ -64,67 +57,36 @@ export default class TextBox {
     this._position = position;
   }
 
-  get state() {
-    return this._state;
-  }
-
-  appendStyle(style: CSSProperties) {
-    this.style = { ...this.style, ...style };
-  }
-
-  toggleBold = (forceValue?: number | string) => {
-    const valueExists = typeof forceValue !== "undefined";
-    let style = {};
-    if (valueExists) {
-      style = { fontWeight: forceValue };
-    } else {
-      style = { fontWeight: this.state.bold ? "unset" : "bold" };
-    }
-    this.appendStyle(style);
+  toggleBold = (forceValue?: FontWeight) => {
+    this.styleHandler.toggleBold(forceValue)
   };
 
   toggleUnderlined = ( forceValue? : boolean ) => {
-    const valueExists = typeof forceValue !== "undefined";
-    let style = {};
-    if(valueExists){
-      const isUnderlined = forceValue;
-      style = { textDecorationLine: isUnderlined ? "unset" : "underline" };
-    } else {
-      style = { textDecorationLine: this.state.underlined? "unset" : "underline" }
-    }
-    this.appendStyle(style)
+    this.styleHandler.toggleUnderlined(forceValue);
   }
 
   toggleItalic = ( forceValue? :boolean ) => {
-    const valueExists = typeof forceValue !== "undefined";
-    let style = {};
-    if(valueExists){
-      const isItalic = forceValue;
-      style = { fontStyle: isItalic ? "unset" : "italic" };
-    } else {
-      style = { fontStyle: this.state.italic? "unset" : "italic" }
-    }
-    this.appendStyle(style)
+    this.styleHandler.toggleItalic(forceValue);
   }
 
-  setAlignment = ( value: "center" | "left" | "right" ) => {
-    this.appendStyle({ textAlign: value })
+  setAlignment = ( value: HorizontalAlignment ) => {
+    this.styleHandler.setAlignment(value)
   }
 
   setFontSize = (fontSize: number) => {
-    this.appendStyle({ fontSize });
+    this.styleHandler.setFontSize(fontSize);
   }
   
   setFontFamily = (fontFamily: string) => {
-    this.appendStyle({ fontFamily });
+    this.styleHandler.setFontFamily(fontFamily)
   }
 
-  setColor = (color: string) => {
-    this.appendStyle({ color });
+  setColor = (color: RGBColor) => {
+    this.styleHandler.setColor(color)
   }
 
   clone = () => {
-    const clonedTextbox = new TextBox(this.position, this.content, this.style);
+    const clonedTextbox = new TextBox(this.position, this.content, this.styleHandler);
     return clonedTextbox;
   }
 }

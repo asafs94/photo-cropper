@@ -4,8 +4,8 @@ import FormatColorTextIcon from "@material-ui/icons/FormatColorText";
 import { ColorChangeHandler, SketchPicker, RGBColor } from "react-color";
 
 interface Props {
-  color: RGBColor;
-  onChange: (color: string) => void;
+  color?: RGBColor;
+  onChange: (color: RGBColor) => void;
   icon?: React.ReactNode;
   className?: string;
   disabled?: boolean;
@@ -39,8 +39,7 @@ export default function ColorPicker({
 
   const handleChange: ColorChangeHandler = useCallback(
     (color) => {
-      const { r, g, b, a } = color.rgb;
-      onChange(`rgba( ${r}, ${g}, ${b}, ${a || 1} )`);
+      onChange(color.rgb);
     },
     [onChange]
   );

@@ -9,6 +9,9 @@ export interface Position {
     y: number
 }
 
+export type HorizontalAlignment = "left" | "right" | "center";
+
+export type TextStyle = "bold" | "italic" | "underlined";
 
 export type setStatePayload<T> = T | ((item: T) => T) 
 

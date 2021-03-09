@@ -54,3 +54,7 @@ export async function appendImages<EditableImage>( oldArray: EditableImage[], ne
     };
     return [...oldArray_withoutPlaceholders, ...newArray];
 }
+
+export function capitalize( str: string ){
+    return str.slice(0,1).toUpperCase() + str.slice(1).toLowerCase();
+}

@@ -1,4 +1,3 @@
-import { hexToRgb } from "@material-ui/core";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import { colorValues } from "./colors";
 

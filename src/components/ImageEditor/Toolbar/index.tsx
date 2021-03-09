@@ -16,46 +16,45 @@ import {
   FormatUnderlined,
   FormatItalic,
 } from "@material-ui/icons";
-
-// import { Autocomplete } from "@material-ui/lab"
-// import { useGoogleFonts } from "../../../utils/hooks/fonts";
-import GoogleFont from "../../../types/GoogleFont";
 import FontSelect from "../../FontSelect";
 import { useAppFonts } from "../../../utils/hooks/fonts";
 import ColorPicker from "../ColorPicker";
-// import FontSelect from "../../FontSelect";
+import { TextStyle, HorizontalAlignment } from "../../../types";
+import { RGBColor } from "react-color";
+import TextBox from "../../../types/TextBox";
 
 interface Props {
   className?: string;
   addTextBox: () => void;
-  selected: boolean;
-  toggleBold: () => void;
-  toggleUnderlined: () => void;
-  toggleItalic: () => void;
-  alignText: (alignment: "center" | "left" | "right") => () => void;
-  selectedState: any;
-  setFontSize: (fontSize: number) => void;
-  setFontFamily: (fontFamily: string) => void;
-  setColor: (color: string) => void
+  selectedTextbox?: TextBox;
+  selectedTextboxHandlers?: {
+    toggleStyle: (styleType: TextStyle) => void;
+    setAlignment: (alignment: "center" | "left" | "right") => void;
+    setFontSize: (fontSize: number) => void;
+    setFontFamily: (fontFamily: string) => void;
+    setColor: (color: RGBColor) => void
+  }
 }
 
 export default function Toolbar({
   addTextBox,
   className,
-  selected,
-  toggleBold,
-  toggleUnderlined,
-  toggleItalic,
-  alignText,
-  setFontFamily,
-  selectedState,
-  setFontSize,
-  setColor,
+  selectedTextbox,
+  selectedTextboxHandlers = {
+    toggleStyle: () => {},
+    setAlignment: () => {},
+    setFontSize: () => {},
+    setFontFamily: () => {},
+    setColor: () => {},
+  },
 }: Props) {
   const classes = useStyles();
   const rootClassName = [classes.Root, className].join(" ");
-  const { bold, italic, underlined, alignment, fontSize, fontFamily, color } = selectedState || {};
+  const { toggleStyle, setAlignment, setFontSize, setFontFamily, setColor } = selectedTextboxHandlers;
+  const { bold, italic, underlined, alignment, fontSize, fontFamily, color } = selectedTextbox?.state || {};
   const { fontsByLanguage } = useAppFonts()
+
+  const _toggleStyle = (style: TextStyle) => () => toggleStyle(style);
 
   const getProps: (
     active: boolean
@@ -68,10 +67,10 @@ export default function Toolbar({
   };
 
   const getAlignmentProps: (
-    alignmentType: "left" | "right" | "center"
-  ) => any = (alignmentType) => {
+    alignmentType: HorizontalAlignment
+  ) => any = (alignmentType: HorizontalAlignment) => {
     let props = {
-      onClick: alignText(alignmentType),
+      onClick: () => setAlignment && setAlignment(alignmentType),
       color: "default",
       variant: "outlined",
     };
@@ -84,7 +83,7 @@ export default function Toolbar({
   return (
     <Paper className={rootClassName}>
       <Grid container spacing={1} alignItems='center'>
-        <Grid item xs={2}>
+        <Grid item>
           <Button
             className={classes.Button}
             variant="outlined"
@@ -94,13 +93,13 @@ export default function Toolbar({
           </Button>
         </Grid>
         <Grid item xs={5}>
-          <FontSelect exampleText={{ value: selectedState.value, style: selectedState.style }} disabled={!selected} onChange={setFontFamily} className={classes.FontSelect} fontsByLanguage={fontsByLanguage} selectedFont={fontFamily} />
+          <FontSelect exampleText={{ value: selectedTextbox?.content || '', style: selectedTextbox?.style }} disabled={!selectedTextbox} onChange={setFontFamily} className={classes.FontSelect} fontsByLanguage={fontsByLanguage} selectedFont={fontFamily || ''} />
         </Grid>
         <Grid item xs={5}>
           <div className={classes.TextField} >
           <InputBase 
               placeholder="Size"
-              disabled={!selected}
+              disabled={!selectedTextbox}
               value={fontSize}
               type="number"
               onChange={(event) => {
@@ -109,35 +108,35 @@ export default function Toolbar({
           </div>
         </Grid>
         <Grid item>
-          <ColorPicker disabled={!selected} className={classes.Button} color={color} onChange={setColor} />
+          <ColorPicker disabled={!selectedTextbox} className={classes.Button} color={color} onChange={setColor} />
         </Grid>
         <Grid item>
-          <ButtonGroup disabled={!selected}>
+          <ButtonGroup disabled={!selectedTextbox}>
             <Button
-              {...getProps(bold)}
+              {...getProps(bold?.isBold || false)}
               className={classes.Button}
-              onClick={() => toggleBold()}
+              onClick={_toggleStyle("bold")}
             >
               <FormatBold fontSize="inherit" />
             </Button>
             <Button
-              {...{ ...getProps(italic) }}
+              {...getProps(italic || false)}
               className={classes.Button}
-              onClick={toggleItalic}
+              onClick={_toggleStyle("italic")}
             >
               <FormatItalic fontSize="inherit" />
             </Button>
             <Button
-              {...{ ...getProps(underlined) }}
+              {...getProps(underlined || false) }
               className={classes.Button}
-              onClick={toggleUnderlined}
+              onClick={_toggleStyle("underlined")}
             >
               <FormatUnderlined fontSize="inherit" />
             </Button>
           </ButtonGroup>
         </Grid>
         <Grid item>
-          <ButtonGroup disabled={!selected}>
+          <ButtonGroup disabled={!selectedTextbox}>
             <Button {...getAlignmentProps("left")} className={classes.Button}>
               <FormatAlignLeft fontSize="inherit" />
             </Button>

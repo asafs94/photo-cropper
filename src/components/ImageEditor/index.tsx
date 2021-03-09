@@ -12,6 +12,7 @@ import {
 } from "../../utils/hooks/single-image";
 import AppImage from "../AppImage/AppImage";
 import ZoomWrapper from "../ZoomWrapper";
+import useSingleTextbox from "../../utils/hooks/single-textbox";
 
 export default function ImageEditor({ imageId, imageSize, onClose }: any) {
   const classes = useStyles({ imageSize });
@@ -20,7 +21,8 @@ export default function ImageEditor({ imageId, imageSize, onClose }: any) {
   const { setTextboxes, submitTextboxes, textboxes } = useImageTextboxes(
     imageId
   );
-
+  const { textbox: selectedTextbox, setAlignment, setColor, setFontFamily, setFontSize, toggleStyle } = useSingleTextbox(selected, textboxes, setTextboxes);
+  const selectedTextboxHandlers = { setAlignment, setColor, setFontFamily, setFontSize, toggleStyle };
   const dragParentRef = useRef();
 
   const onSave = useCallback(() => {
@@ -82,33 +84,6 @@ export default function ImageEditor({ imageId, imageSize, onClose }: any) {
     [setTextboxes]
   );
 
-  const toggleBold = useCallback((value?: string | number) => {
-    setTextboxes(
-      setItemById(selected, (textbox) => {
-        textbox.toggleBold(value);
-        return textbox;
-      })
-    );
-  }, [selected, setTextboxes]);
-
-  const toggleUnderlined = useCallback(() => {
-    setTextboxes(
-      setItemById(selected, (textbox) => {
-        textbox.toggleUnderlined();
-        return textbox;
-      })
-    );
-  }, [selected, setTextboxes]);
-
-  const toggleItalic = useCallback(() => {
-    setTextboxes(
-      setItemById(selected, (textbox) => {
-        textbox.toggleItalic();
-        return textbox;
-      })
-    );
-  }, [selected, setTextboxes]);
-
   const onSelect = useCallback(
     (id: string) => (event: React.MouseEvent) => {
       event.stopPropagation();
@@ -116,56 +91,6 @@ export default function ImageEditor({ imageId, imageSize, onClose }: any) {
     },
     [setSelected]
   );
-
-  const alignTextBox = useCallback(
-    (alignment: "center" | "left" | "right") => () => {
-      setTextboxes(
-        setItemById(selected, (textbox) => {
-          textbox.setAlignment(alignment);
-          return textbox;
-        })
-      );
-    },
-    [setTextboxes, selected]
-  );
-
-  const setFontSize = useCallback(
-    (fontSize: number) => {
-      setTextboxes(
-        setItemById(selected, (item) => {
-          item.setFontSize(fontSize);
-          return item;
-        })
-      );
-    },
-    [setTextboxes, selected]
-  );
-
-  const setFontFamily = useCallback(
-    (fontFamily: string) => {
-      setTextboxes(
-        setItemById(selected, (item) => {
-          item.setFontFamily(fontFamily);
-          return item;
-        })
-      );
-    },
-    [setTextboxes, selected]
-  )
-
-  const setColor = useCallback((color)=>{
-    setTextboxes(
-      setItemById(selected, (item)=> {
-        item.setColor(color)
-        return item;
-      })
-    )
-  },[setTextboxes, selected])
-
-  const selectedTextBox = textboxes.find(
-    (textbox) => textbox.id === selected
-  );
-  const selectedTextBoxState = { ...selectedTextBox?.state, value: selectedTextBox?.content, style: selectedTextBox?.style }
 
   if(!image){
     return null;
@@ -175,16 +100,9 @@ export default function ImageEditor({ imageId, imageSize, onClose }: any) {
     <Paper className={classes.Root}>
       <Toolbar
         className={classes.Toolbar}
-        toggleUnderlined={toggleUnderlined}
-        toggleItalic={toggleItalic}
-        toggleBold={toggleBold}
-        selected={Boolean(selected)}
         addTextBox={addNewTextBox}
-        alignText={alignTextBox}
-        selectedState={selectedTextBoxState}
-        setFontSize={setFontSize}
-        setFontFamily={setFontFamily}
-        setColor={setColor}
+        selectedTextbox={selectedTextbox}
+        selectedTextboxHandlers={selectedTextboxHandlers}
       />
       <div className={classes.EditableArea}>
       <ZoomWrapper>

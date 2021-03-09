@@ -1,9 +1,11 @@
 import { RGBColor } from "react-color";
 
-export interface StyleState {
-
+export type TextShadowPayload = {
+    h: number,
+    v: number,
+    blurRadius: number,
+    color?: RGBColor
 }
-
 
 export class TextShadow {
     /**
@@ -23,7 +25,7 @@ export class TextShadow {
      */
     color?: RGBColor
 
-    constructor(h: number, v: number, blurRadius: number, color?: RGBColor){
+    constructor({h, v, blurRadius, color} : TextShadowPayload = { h:0, v:0, blurRadius: 0 }){
         this.h = h;
         this.v = v;
         this.blurRadius = blurRadius;

@@ -27,7 +27,7 @@ export default class TextBox {
       fontSize: 20,
       fontFamily: "Roboto",
       color: { r: 0, g: 0, b: 0, a: 1 },
-      shadow: new TextShadow(0,0,0),
+      shadow: new TextShadow(),
     });
     this._id = id || v4();
     this.content = content || "";

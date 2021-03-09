@@ -1,7 +1,7 @@
 import { CSSProperties } from "@material-ui/styles";
 import { RGBColor } from "react-color";
 import { HorizontalAlignment } from ".";
-import { FontWeight } from "./StylesDefinitions";
+import { FontWeight, TextShadow, TextShadowPayload } from "./StylesDefinitions";
 import TextState from "./TextboxState";
 
 export default class StyleHandler {
@@ -84,6 +84,10 @@ export default class StyleHandler {
 
     setColor( value: RGBColor ){
         this.setState({ color: value })
+    }
+
+    setTextShadow( value: TextShadowPayload){
+        this.setState({ shadow: new TextShadow(value) });
     }
 
     

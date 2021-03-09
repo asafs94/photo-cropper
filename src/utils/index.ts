@@ -1,5 +1,4 @@
 import { IdentifiedItem, setStatePayload } from "../types";
-import EditableImage from "../types/EditableImage";
 import { PlaceholderImage } from "../types/Placeholder";
 
 

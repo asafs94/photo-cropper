@@ -5,9 +5,10 @@ interface StyleProps {
 }
 
 export default makeStyles<Theme, StyleProps>((theme) => {
-  const size = 450;
   return {
     Root: {
+      height: '600px',
+      width: '700px',
       maxWidth: "100%",
       maxHeight: "100%",
       background: fade(theme.palette.common.black, 0.2),
@@ -18,16 +19,15 @@ export default makeStyles<Theme, StyleProps>((theme) => {
       gridTemplateRows: "auto 1fr auto",
       justifyItems: "center",
       gridGap: theme.spacing(),
+      
     },
     Toolbar: {
-      width: size,
+      width: '100%',
       boxSizing: 'border-box',
     },
     EditableArea: {
-      width: size,
-      height: size,
-      
-      
+      width: '100%',
+      height: '100%'
     },
     Editable:{
       position: "relative",
@@ -42,7 +42,7 @@ export default makeStyles<Theme, StyleProps>((theme) => {
       margin: "auto",
     },
     SaveButton:{
-      width: size
-    }
+      width: '100%'
+    },
   };
 });

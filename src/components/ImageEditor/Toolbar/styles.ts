@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => {
     Button:{
         fontSize: 'calc(1rem)',
         lineHeight: 1,
-        minHeight: "100%"
+        minHeight: 38,
     },
     FontSelect:{
       width: "100%",
@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => {
     TextField: {
       width: "100%",
       height: "100%",
+      minHeight: 38,
       boxSizing: "border-box",
       display: "flex",
       border: '1px solid '+theme.palette.divider,

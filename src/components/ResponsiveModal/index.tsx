@@ -4,6 +4,8 @@ import React from 'react'
 const useStyles = makeStyles((theme)=>{
     return {
         paper:{
+            width: theme.breakpoints.values.sm,
+            height: theme.breakpoints.values.sm,
             [theme.breakpoints.between('xs', 'sm')]:{
                 width: '90%',
                 height: '90%',

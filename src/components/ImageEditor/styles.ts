@@ -48,7 +48,7 @@ export default makeStyles<Theme, StyleProps>((theme) => {
     },
     CloseButton:{
       marginRight: theme.spacing(),
-      [theme.breakpoints.up('sm')]:{
+      [theme.breakpoints.up('md')]:{
         display: 'none',
       }
     }

@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useCallback, useContext, useRef, useState } from "react";
 import "./App.css";
 import SixSquares from "./components/Templates/SixSquares";
 import A4 from "./components/Papers/A4";
@@ -21,6 +21,7 @@ import TextWithLineBreaks from "./components/TextWithLinebreaks";
 import ImageEditor from "./components/ImageEditor";
 import { AppContextMenuContext } from "./hoc/AppContextMenu";
 import { byId } from "./utils";
+import { Position } from "./types";
 
 
 function App() {
@@ -31,13 +32,23 @@ function App() {
   const [drawerOpen, toggleDrawer] = useToggleable(false);
   const [headerNote, setHeaderNote] = useState("");
   const [footerNote, setFooterNote] = useState("");
-  const { images, uploadFiles, onClear, setSingleImage } = useContext(ImageContext);
+  const { images, uploadFiles, onClear, setSingleImage, setImages } = useContext(ImageContext);
   const [dialogPayload, setDialogPayload] = useState<{ open: boolean, imageId?: string }>({ open: false });
   const [closeEditor, setCloseEditor] = useState< {resolve: Function} | null>(null);
   const openContextMenu = useContext(AppContextMenuContext); 
   const smallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
+
+  const setImagesCropAndZoom = useCallback((crop: Position, zoom: number) => {
+    setImages( images => {
+      return images.map( image => {
+        image.crop = crop;
+        image.zoom = zoom;
+        return image;
+      } )
+    } )
+  },[setImages])
 
   const openImageContextMenu = (id: string) => async (event: React.MouseEvent) => {
     const image = images.find(byId(id));
@@ -46,7 +57,7 @@ function App() {
         event, 
         promise: {resolve, reject}, 
         options: [
-          { value: 'apply-to-all', text: 'Apply to All', disabled: true }, 
+          { value: 'apply-to-all', text: 'Apply to All (Zoom and Crop)' }, 
           { value: 'edit', text: 'Edit' },
           { value: image?.locked? 'unlock' : 'lock', text: image?.locked? "Unlock" : "Lock"}
         ] })
@@ -55,7 +66,14 @@ function App() {
   }
 
   const onContextMenuClick = ({ imageId, value }: any) =>{
+    const image = images.find(byId(imageId));
     switch (value){
+      case "apply-to-all":{
+        if(image){
+          setImagesCropAndZoom(image?.crop, image.zoom);
+        }
+        break;
+      }
       case "edit": {
         setDialogPayload({ open: true, imageId });
         break;

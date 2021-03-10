@@ -3,7 +3,6 @@ import { Fab, fade, makeStyles, MenuItem, Select } from "@material-ui/core";
 import { Add, Remove, PanTool } from "@material-ui/icons";
 import { measureDistance } from "../../utils";
 import { useStateWithPromise } from "../../utils/hooks";
-import {useLog} from '../../utils/hooks/log';
 
 const useStyles = makeStyles((theme) => {
   return {

@@ -115,7 +115,7 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
       if (_option === "fit") {
         setScale(fitScale);
       } else {
-        setScale(_option);
+        setScale(_option)
       }
     },
     [setScale, fitScale]
@@ -237,7 +237,8 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
       return;
     }
     const delta = -event.deltaY / 1000;
-    setCustomOption(scale + delta);
+    const result = scale + delta < 0.05? 0.05 : scale + delta;
+    setCustomOption(result);
   };
 
   return (

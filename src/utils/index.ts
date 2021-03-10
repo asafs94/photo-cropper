@@ -62,3 +62,8 @@ export function capitalize( str: string ){
 export function positionsAreEqual( p1: Position, p2: Position ) {
     return p1.x === p2.x && p1.y === p2.y;
 }
+
+
+export function measureDistance( p1: Position, p2: Position ) {
+    return Math.sqrt(Math.abs(((p1.x - p2.x)^2 + (p1.y - p2.y)^2)));
+}

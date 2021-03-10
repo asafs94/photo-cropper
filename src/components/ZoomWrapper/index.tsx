@@ -1,6 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Fab, fade, makeStyles, MenuItem, Select } from "@material-ui/core";
 import { Add, Remove, PanTool } from "@material-ui/icons";
+import { measureDistance } from "../../utils";
+import { useStateWithPromise } from "../../utils/hooks";
+import {useLog} from '../../utils/hooks/log';
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -81,12 +84,15 @@ const selectOptions: Array<"fit" | number> = ["fit", 0.25, 0.5, 0.75, 1];
 const ZoomWrapper = ({ children: child, defaultOption = "fit", removeSelect, removeZoomControllers, removePanTool }: Props) => {
   const [scale, setScale] = useState(1);
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
-  const [option, setOption] = useState<"fit" | number>(defaultOption);
+  const [option, setOption] = useStateWithPromise<"fit" | number>(defaultOption);
   const [fitScale, setFitScale] = useState<number>(0);
   const [customOption, setCustomOption] = useState<null | number>(null);
   const [childSize, setChildSize] = useState({ width: 0, height: 0 });
   const [dragging, setDragging] = useState(false);
   const [moveMode, setMoveMode] = useState(false);
+  const [pinching, setPinching] = useState(false);
+  const distanceBetwwenFingers = useRef(0);
+  const fromScale = useRef(0);
   const mousePosition = useRef({ x: 0, y: 0 });
   const ref = useRef<any>();
   const childRef = useRef<any>();
@@ -139,14 +145,14 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit", removeSelect, rem
     [setDragging]
   );
 
-  useEffect(() => {
+  const centerChild = useCallback(()=>{
     const child = childRef.current;
     (child as HTMLDivElement).scrollIntoView({
       behavior: "auto",
       block: "center",
       inline: "center",
     });
-  }, [scale]);
+  },[])
 
   useEffect(() => {
     calcFitScale();
@@ -157,14 +163,15 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit", removeSelect, rem
   }, []);
 
   const onSelect = useCallback(
-    (
+    async (
       event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>
     ) => {
       const value = event.target.value as "fit" | number;
       setCustomOption(null);
-      setOption(value);
+      await setOption(value);
+      centerChild();
     },
-    [setOption, setCustomOption, setZoom, fitScale]
+    [setOption, setCustomOption, centerChild]
   );
 
   const onAddZoom = useCallback(() => {
@@ -245,14 +252,79 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit", removeSelect, rem
     setCustomOption(result);
   };
 
+  const onPinch = useCallback((event: React.TouchEvent) => {
+    if(!pinching){
+      return;
+    }
+    const points = Array.from(event.touches).map( point => ({ x: point.clientX, y: point.clientY }) );
+    const currentDistance = measureDistance(points[0], points[1]);
+    const oldDistance = distanceBetwwenFingers.current; 
+    let ratio = (currentDistance/oldDistance);
+    let _scale = Math.max(fromScale.current*ratio, 0.05);
+    setCustomOption(_scale)
+  },[setCustomOption, pinching])
+
+  const onTouchMove = useCallback( (event: React.TouchEvent) => {
+    const child = childRef.current as HTMLDivElement;
+    if(child.contains(event.target as Node) && !moveMode){
+      return;
+    }
+    switch(event.touches.length){
+      case 1: {
+        onDrag(event);
+        break;
+      }
+      case 2: {
+        onPinch(event);
+        break;
+      }
+    }
+  },[onDrag, onPinch, moveMode])
+
+  const setDistanceBetweenFingers = useCallback((event: React.TouchEvent)=>{
+    const point1 = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+    const point2 = { x: event.touches[1].clientX, y: event.touches[1].clientY };
+    const distance = measureDistance(point1, point2);
+    distanceBetwwenFingers.current = distance;
+    fromScale.current = scale
+    setPinching(true);
+  },[setPinching, scale]);
+
+  const onTouchStart = useCallback((event: React.TouchEvent)=>{
+    const child = childRef.current as HTMLDivElement;
+      if(child.contains(event.target as Node) && !moveMode){
+        return;
+      }
+    switch(event.touches.length){
+      case 1: {
+        setPosition(event);
+        break;
+      }
+      case 2: {
+        setDistanceBetweenFingers(event);
+        break;
+      }
+    }
+  },[setPosition, setDistanceBetweenFingers, moveMode])
+
+
+  const onTouchEnd = useCallback(()=>{
+    setPinching(false);
+    distanceBetwwenFingers.current = 0;
+    fromScale.current = 0;
+  },[setPinching])
+
+
   return (
     <div
       ref={ref}
       onWheel={onWheel}
       onMouseDown={setPosition}
       onMouseMove={onDrag}
-      onTouchStart={setPosition}
-      onTouchMove={onDrag}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+      onTouchCancel={onTouchEnd}
       className={classes.Wrapper}
     >
       <div className={classes.Settings}>

@@ -157,15 +157,16 @@ export default function ImageEditor({ imageId, imageSize, onClose, closeEditor }
       </Paper>
       </ZoomWrapper>
       </div>
-      <Button
-        className={classes.SaveButton}
-        onClick={onSave}
-        fullWidth
-        variant="contained"
-        color="primary"
-      >
-        Save
-      </Button>
+      <div className={classes.ButtonRow}>
+        <Button className={classes.CloseButton} onClick={onClose} variant="contained">Close</Button>
+        <Button
+          onClick={onSave}
+          variant="contained"
+          color="primary"
+        >
+          Save
+        </Button>
+      </div>
       <Dialog open={saveBeforeExitDialog}>
         <DialogTitle>Should save changes?</DialogTitle>
         <DialogActions>

@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme) => {
     },
     Select: {
       width: 190,
+      maxWidth: '40vw',
     },
     Content: {
       width: "fit-content",
@@ -70,11 +71,14 @@ const useStyles = makeStyles((theme) => {
 interface Props {
   children: React.ReactChild;
   defaultOption?: "fit" | number;
+  removeSelect?: boolean,
+  removeZoomControllers?: boolean,
+  removePanTool?: boolean
 }
 
 const selectOptions: Array<"fit" | number> = ["fit", 0.25, 0.5, 0.75, 1];
 
-const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
+const ZoomWrapper = ({ children: child, defaultOption = "fit", removeSelect, removeZoomControllers, removePanTool }: Props) => {
   const [scale, setScale] = useState(1);
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
   const [option, setOption] = useState<"fit" | number>(defaultOption);
@@ -253,7 +257,7 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
     >
       <div className={classes.Settings}>
         <div>
-          <Select
+          { !removeSelect && <Select
             className={classes.Select}
             value={option}
             onChange={onSelect}
@@ -271,19 +275,19 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
                 {(customOption * 100).toFixed()}%{}
               </option>
             )}
-          </Select>
-          <Fab size="small" color="primary" onClick={onAddZoom}>
+          </Select>}
+          { !removeZoomControllers && <Fab size="small" color="primary" onClick={onAddZoom}>
             <Add />
-          </Fab>
-          <Fab
+          </Fab>}
+          {!removeZoomControllers && <Fab
             size="small"
             color="primary"
             onClick={onSubtractZoom}
             disabled={scale - 0.05 < 0}
           >
             <Remove />
-          </Fab>
-          <Fab size="small" color={moveMode? "primary": "default"} onClick={() => setMoveMode(m => !m) } ><PanTool /></Fab>
+          </Fab>}
+          { !removePanTool && <Fab size="small" color={moveMode? "primary": "default"} onClick={() => setMoveMode(m => !m) } ><PanTool /></Fab>}
         </div>
       </div>
       <div ref={childRef} className={classes.Content}>

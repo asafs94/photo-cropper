@@ -10,10 +10,17 @@ const useStyles = makeStyles((theme) => {
       flexWrap: "wrap",
       padding: gap,
     },
+    ButtonGroup:{
+      width: '100%',
+    },
     Button:{
         fontSize: 'calc(1rem)',
         lineHeight: 1,
         minHeight: 38,
+        width: '100%',
+        boxSizing: 'border-box',
+        padding: 0,
+        minWidth: 'unset'
     },
     FontSelect:{
       width: "100%",

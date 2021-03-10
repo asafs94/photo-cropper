@@ -22,6 +22,7 @@ import ImageEditor from "./components/ImageEditor";
 import { AppContextMenuContext } from "./hoc/AppContextMenu";
 import { byId } from "./utils";
 import { Position } from "./types";
+import ResponsiveModal from "./components/ResponsiveModal";
 
 
 function App() {
@@ -132,13 +133,13 @@ function App() {
             </A4>
           </ZoomWrapper>
         </main>
-        <Dialog open={dialogPayload.open} onClose={initEditorCloseRequest} >
+        <ResponsiveModal open={dialogPayload.open} onClose={initEditorCloseRequest} >
           <ImageEditor 
             imageId={dialogPayload.imageId} 
             imageSize={{ height: imageCurrentSize, width: imageCurrentSize }} 
             onClose={()=>setDialogPayload({ open: false })} 
             closeEditor={closeEditor} />
-        </Dialog>
+        </ResponsiveModal>
         <Drawer
           className={classes.DrawerWrapper}
           onClose={toggleDrawer}

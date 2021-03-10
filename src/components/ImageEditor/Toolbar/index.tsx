@@ -83,7 +83,7 @@ export default function Toolbar({
   return (
     <Paper className={rootClassName}>
       <Grid container spacing={1} alignItems='center'>
-        <Grid item>
+        <Grid item xs={2}>
           <Button
             className={classes.Button}
             variant="outlined"
@@ -107,11 +107,11 @@ export default function Toolbar({
               }} />
           </div>
         </Grid>
-        <Grid item>
+        <Grid item xs={2}>
           <ColorPicker disabled={!selectedTextbox} className={classes.Button} color={color} onChange={setColor} />
         </Grid>
-        <Grid item>
-          <ButtonGroup disabled={!selectedTextbox}>
+        <Grid item xs={5}>
+          <ButtonGroup className={classes.ButtonGroup} disabled={!selectedTextbox}>
             <Button
               {...getProps(bold?.isBold || false)}
               className={classes.Button}
@@ -135,8 +135,8 @@ export default function Toolbar({
             </Button>
           </ButtonGroup>
         </Grid>
-        <Grid item>
-          <ButtonGroup disabled={!selectedTextbox}>
+        <Grid item xs={5}>
+          <ButtonGroup className={classes.ButtonGroup} disabled={!selectedTextbox}>
             <Button {...getAlignmentProps("left")} className={classes.Button}>
               <FormatAlignLeft fontSize="inherit" />
             </Button>

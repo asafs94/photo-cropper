@@ -7,10 +7,8 @@ interface StyleProps {
 export default makeStyles<Theme, StyleProps>((theme) => {
   return {
     Root: {
-      height: '600px',
-      width: '700px',
-      maxWidth: "100%",
-      maxHeight: "100%",
+      height: '100%',
+      width: '100%',
       background: fade(theme.palette.common.black, 0.2),
       padding: theme.spacing(),
       boxSizing: 'border-box',
@@ -41,8 +39,18 @@ export default makeStyles<Theme, StyleProps>((theme) => {
       background: theme.palette.background.paper,
       margin: "auto",
     },
-    SaveButton:{
-      width: '100%'
+    ButtonRow:{
+      width: '100%',
+      display: 'flex',
+      '&>button':{
+        flex: 1,
+      }
     },
+    CloseButton:{
+      marginRight: theme.spacing(),
+      [theme.breakpoints.up('sm')]:{
+        display: 'none',
+      }
+    }
   };
 });

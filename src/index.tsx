@@ -6,17 +6,25 @@ import reportWebVitals from './reportWebVitals';
 import ImageProvider from './hoc/ImageProvider';
 import AppContextMenu from './hoc/AppContextMenu';
 import { ThemeProvider } from '@material-ui/core';
+import AppAlertProvider from './hoc/AppAlerts';
 import theme from './theme/default';
+import AppFonts from './hoc/AppFonts';
 
 ReactDOM.render(
   <React.StrictMode>
-    <ImageProvider>
-      <ThemeProvider theme={theme}>
-      <AppContextMenu>
-      <App />
-      </AppContextMenu>
-      </ThemeProvider>
-    </ImageProvider>
+   
+      <ImageProvider>
+        <ThemeProvider theme={theme}>
+        <AppAlertProvider>
+          <AppContextMenu>
+          <AppFonts>
+          <App />
+          </AppFonts>
+          </AppContextMenu>
+        </AppAlertProvider>
+        </ThemeProvider>
+      </ImageProvider>
+    
   </React.StrictMode>,
   document.getElementById('root')
 );

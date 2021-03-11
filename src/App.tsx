@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useCallback, useContext, useRef, useState } from "react";
 import "./App.css";
 import SixSquares from "./components/Templates/SixSquares";
 import A4 from "./components/Papers/A4";
@@ -19,19 +19,96 @@ import { Menu } from "@material-ui/icons";
 import ImageDropZone from "./hoc/ImageDropZone";
 import TextWithLineBreaks from "./components/TextWithLinebreaks";
 import ImageEditor from "./components/ImageEditor";
+import { AppContextMenuContext } from "./hoc/AppContextMenu";
+import { byId } from "./utils";
+import { Position } from "./types";
+import ResponsiveModal from "./components/ResponsiveModal";
 
 
 function App() {
   const paperRef = useRef<any>();
   const appRef = useRef<any>();
   const classes = useStyles();
+  const imageCurrentSize = "85mm"
   const [drawerOpen, toggleDrawer] = useToggleable(false);
   const [headerNote, setHeaderNote] = useState("");
   const [footerNote, setFooterNote] = useState("");
-  const { croppableImages, uploadFiles, onClear } = useContext(ImageContext);
+  const { images, uploadFiles, onClear, setSingleImage, setImages } = useContext(ImageContext);
+  const [dialogPayload, setDialogPayload] = useState<{ open: boolean, imageId?: string }>({ open: false });
+  const [closeEditor, setCloseEditor] = useState< {resolve: Function} | null>(null);
+  const openContextMenu = useContext(AppContextMenuContext); 
   const smallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
+
+  const setImagesCropAndZoom = useCallback((crop: Position, zoom: number) => {
+    setImages( images => {
+      return images.map( image => {
+        image.crop = crop;
+        image.zoom = zoom;
+        return image;
+      } )
+    } )
+  },[setImages])
+
+  const openImageContextMenu = (id: string) => async (event: React.MouseEvent) => {
+    const image = images.find(byId(id));
+    const value = await new Promise( (resolve, reject) => {
+      openContextMenu({ 
+        event, 
+        promise: {resolve, reject}, 
+        options: [
+          { value: 'apply-to-all', text: 'Apply to All (Zoom and Crop)' }, 
+          { value: 'edit', text: 'Edit' },
+          { value: image?.locked? 'unlock' : 'lock', text: image?.locked? "Unlock" : "Lock"}
+        ] })
+    });
+    onContextMenuClick({ imageId: id, value })
+  }
+
+  const onContextMenuClick = ({ imageId, value }: any) =>{
+    const image = images.find(byId(imageId));
+    switch (value){
+      case "apply-to-all":{
+        if(image){
+          setImagesCropAndZoom(image?.crop, image.zoom);
+        }
+        break;
+      }
+      case "edit": {
+        setDialogPayload({ open: true, imageId });
+        break;
+      }
+      case "lock": {
+        setSingleImage(imageId)(
+          image => { 
+            image.locked = true; 
+            return image; 
+        });
+        break;
+      }
+      case "unlock": {
+        setSingleImage(imageId)(
+          image => {
+            image.locked = false;
+            return image;
+          }
+        )
+        break;
+      }
+    }
+  }
+
+  const initEditorCloseRequest = () => {
+    new Promise<any>( (resolve) => {
+      setCloseEditor({ resolve });
+    }).then(() => {
+      setDialogPayload({ open: false });
+    }).finally( ()=>{
+      setCloseEditor(null);
+    })
+  }
+
   return (
     <ImageDropZone onDrop={uploadFiles}>
       <div className={classes.Root} ref={appRef}>
@@ -49,16 +126,20 @@ function App() {
               <Typography component="header" className={classes.Note}>
                 <TextWithLineBreaks>{headerNote}</TextWithLineBreaks>
               </Typography>
-              <SixSquares croppableImages={croppableImages} />
+              <SixSquares images={images} onImageContextMenu={openImageContextMenu}/>
               <Typography component="footer" className={classes.Note}>
                 <TextWithLineBreaks>{footerNote}</TextWithLineBreaks>
               </Typography>
             </A4>
           </ZoomWrapper>
         </main>
-        <Dialog open={false}>
-          <ImageEditor imageId={croppableImages[0] && croppableImages[0].id || ''} />
-        </Dialog>
+        <ResponsiveModal open={dialogPayload.open} onClose={initEditorCloseRequest} >
+          <ImageEditor 
+            imageId={dialogPayload.imageId} 
+            imageSize={{ height: imageCurrentSize, width: imageCurrentSize }} 
+            onClose={()=>setDialogPayload({ open: false })} 
+            closeEditor={closeEditor} />
+        </ResponsiveModal>
         <Drawer
           className={classes.DrawerWrapper}
           onClose={toggleDrawer}
@@ -69,7 +150,7 @@ function App() {
         >
           <EditSection
             onUpload={uploadFiles}
-            loaded={!!croppableImages.length}
+            loaded={!!images.length}
             onClear={onClear}
             amount={6}
             headerNote={headerNote}

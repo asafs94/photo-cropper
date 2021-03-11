@@ -13,7 +13,7 @@ interface Props {
   setPosition: (location: Point) => void;
   zoom: number;
   position: Point;
-  onContextMenu:
+  onContextMenu?:
     | ((event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void)
     | undefined;
   disabled?: boolean;

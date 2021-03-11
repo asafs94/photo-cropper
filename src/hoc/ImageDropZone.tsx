@@ -40,7 +40,8 @@ export default function ImageDropZone({children, onDrop}: Props) {
         event.stopPropagation();
         const fileList = event.dataTransfer && event.dataTransfer.items
         const _files = Array.from((fileList as DataTransferItemList || []));
-        if(_files[0]){
+        if(_files[0] && _files.some( file => file.kind !== "string" )){
+            console.log(_files[0]);
             dragCount.current ++;
             setDragging(true)
         }

@@ -5,34 +5,44 @@ import { Position } from '../types';
 export const AppContextMenuContext = createContext<(payload: ContextMenuPayload) => void>(()=>{})
 
 interface Option {
-    value: string,text: string, onSelect?: any
+    value: string, text: string, disabled?: boolean
+}
+
+interface PromiseHandler {
+    resolve: Function,
+    reject: Function
 }
 
 interface ContextMenuPayload {
     options: Array<Option>,
     event: React.MouseEvent | MouseEvent,
+    promise: PromiseHandler
 }
 
 export default function AppContextMenu({children}: any) {
     const [options, setOptions] = useState<Array<Option>>([]);
     const [position, setPosition] = useState<Position | null>(null);
+    const [promise, setPromise] = useState<PromiseHandler>();
     const openContextMenu = (payload: ContextMenuPayload) =>{
         payload.event.preventDefault();
         setPosition({x: payload.event.clientX, y: payload.event.clientY});
         setOptions(payload.options)
+        setPromise(payload.promise);
     }
     
     const closeContextMenu = useCallback(
         () => {
-            setPosition(null)
+            setPosition(null);
+            setPromise(undefined);
         },
-        [setPosition],
+        [setPosition, setPromise],
     )
 
-    const handleClick = (option: Option) => () =>{
-        option.onSelect && option.onSelect();
+
+    const handleClick = useCallback((option: Option) => () =>{
+        promise?.resolve(option.value);
         closeContextMenu();
-    }
+    }, [promise])
 
     useEffect(()=>{
         const prevent = (event: MouseEvent) => {
@@ -58,7 +68,7 @@ export default function AppContextMenu({children}: any) {
             anchorReference="anchorPosition"
             anchorPosition={position? { top: position.y, left: position.x } : undefined} 
           >
-              {options.map(option => <MenuItem key={option.value} onClick={handleClick(option)}>{option.text}</MenuItem>)}
+              {options.map(option => <MenuItem key={option.value} disabled={option.disabled} onClick={handleClick(option)}>{option.text}</MenuItem>)}
         </Menu> 
         </AppContextMenuContext.Provider>
     )

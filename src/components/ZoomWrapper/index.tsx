@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Fab, makeStyles, MenuItem, Select } from "@material-ui/core";
-import { Add, Remove } from "@material-ui/icons";
+import { Fab, fade, makeStyles, MenuItem, Select } from "@material-ui/core";
+import { Add, Remove, PanTool } from "@material-ui/icons";
+import { measureDistance } from "../../utils";
+import { useStateWithPromise } from "../../utils/hooks";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -10,22 +12,23 @@ const useStyles = makeStyles((theme) => {
       position: "relative",
       overflow: "hidden",
       cursor: "grab",
+      boxSizing: "border-box",
     },
     Settings: {
       position: "sticky",
-      top: "calc( 100% - 70px )",
+      top: "100%",
       left: 0,
       zIndex: 1,
       alignSelf: "flex-start",
       "&>div": {
         position: "absolute",
         left: 0,
-        top: 35,
+        bottom: -20,
         width: "fit-content",
         height: "fit-content",
         display: "grid",
         gridGap: theme.spacing(),
-        gridTemplateColumns: "auto auto auto",
+        gridTemplateColumns: "auto auto auto auto",
         alignContent: "center",
         justifyContent: "center",
         alignItems: "center",
@@ -33,6 +36,7 @@ const useStyles = makeStyles((theme) => {
     },
     Select: {
       width: 190,
+      maxWidth: '40vw',
     },
     Content: {
       width: "fit-content",
@@ -41,8 +45,19 @@ const useStyles = makeStyles((theme) => {
       top: ({ childSize }: any) => `calc(50% - ${childSize.height / 2}px)`,
       left: ({ childSize }: any) => `calc(50% - ${childSize.width / 2}px)`,
       margin: "auto",
+      cursor: "initial",
       transform: ({ scale, translate }: any) =>
         `scale(${scale}) translate(${translate.x}px, ${translate.y}px)`,
+    },
+    MoveModeOverlay: {
+      position: "absolute",
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      background: fade(theme.palette.background.default,0.2),
+      zIndex: 2,
+      cursor: "grab"
     },
     "@media print": {
       Content: {
@@ -58,22 +73,29 @@ const useStyles = makeStyles((theme) => {
 interface Props {
   children: React.ReactChild;
   defaultOption?: "fit" | number;
+  removeSelect?: boolean,
+  removeZoomControllers?: boolean,
+  removePanTool?: boolean
 }
 
 const selectOptions: Array<"fit" | number> = ["fit", 0.25, 0.5, 0.75, 1];
 
-const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
+const ZoomWrapper = ({ children: child, defaultOption = "fit", removeSelect, removeZoomControllers, removePanTool }: Props) => {
   const [scale, setScale] = useState(1);
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
-  const [option, setOption] = useState<"fit" | number>(defaultOption);
+  const [option, setOption] = useStateWithPromise<"fit" | number>(defaultOption);
   const [fitScale, setFitScale] = useState<number>(0);
   const [customOption, setCustomOption] = useState<null | number>(null);
   const [childSize, setChildSize] = useState({ width: 0, height: 0 });
   const [dragging, setDragging] = useState(false);
+  const [moveMode, setMoveMode] = useState(false);
+  const [pinching, setPinching] = useState(false);
+  const distanceBetwwenFingers = useRef(0);
   const mousePosition = useRef({ x: 0, y: 0 });
   const ref = useRef<any>();
   const childRef = useRef<any>();
-  const classes = useStyles({ scale, fitScale, childSize, translate });
+  const moveModeOverlayRef = useRef<any>();
+  const classes = useStyles({ scale, fitScale, childSize, translate, moveMode });
 
   const calcFitScale = useCallback(() => {
     const wrapper = ref.current;
@@ -87,19 +109,21 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
     };
     if (ratio.height < 1 || ratio.width < 1) {
       if (ratio.height < ratio.width) {
-        setFitScale(ratio.height);
+        setFitScale(ratio.height*0.95);
       } else {
-        setFitScale(ratio.width);
+        setFitScale(ratio.width*0.95);
       }
+    } else {
+      setFitScale(1)
     }
-  }, [setScale]);
+  }, [setFitScale]);
 
   const setZoom = useCallback(
     (_option: "fit" | number) => {
       if (_option === "fit") {
         setScale(fitScale);
       } else {
-        setScale(_option);
+        setScale(_option)
       }
     },
     [setScale, fitScale]
@@ -119,14 +143,14 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
     [setDragging]
   );
 
-  useEffect(() => {
+  const centerChild = useCallback(()=>{
     const child = childRef.current;
     (child as HTMLDivElement).scrollIntoView({
       behavior: "auto",
       block: "center",
       inline: "center",
     });
-  }, [scale]);
+  },[])
 
   useEffect(() => {
     calcFitScale();
@@ -137,14 +161,15 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
   }, []);
 
   const onSelect = useCallback(
-    (
+    async (
       event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>
     ) => {
       const value = event.target.value as "fit" | number;
       setCustomOption(null);
-      setOption(value);
+      await setOption(value);
+      centerChild();
     },
-    [setOption, setCustomOption, setZoom, fitScale]
+    [setOption, setCustomOption, centerChild]
   );
 
   const onAddZoom = useCallback(() => {
@@ -166,11 +191,15 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
     if(selectOptions.includes(option)){
       setTranslate({ x: 0, y: 0 })
     }
-  }, [fitScale, option, setTranslate]);
+  }, [option, fitScale, setTranslate, setZoom]);
 
   const onDrag = useCallback(
     (event: React.MouseEvent | React.TouchEvent) => {
       event.preventDefault();
+      const child = childRef.current as HTMLDivElement;
+      if(child.contains(event.target as Node) && !moveMode){
+        return;
+      }
       let obj: any;
       if ((event as any).changedTouches) {
         obj = (event as React.TouchEvent).changedTouches[0];
@@ -181,15 +210,16 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
         const { x, y } = mousePosition.current;
         const delta = { x: obj.clientX - x, y: obj.clientY - y };
         mousePosition.current = { x: obj.clientX, y: obj.clientY };
+        const relativeDelta = { x: delta.x/scale, y: delta.y/scale };
         setTranslate((t) => {
           return {
-            x: t.x + delta.x,
-            y: t.y + delta.y,
+            x: t.x + relativeDelta.x,
+            y: t.y + relativeDelta.y,
           };
         });
       }
     },
-    [setTranslate, dragging]
+    [setTranslate, dragging, moveMode, scale]
   );
 
   const onDrop = useCallback(
@@ -211,9 +241,76 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
   const onWheel = (event: React.WheelEvent) => {
     event.preventDefault();
     event.stopPropagation();
+    const child = childRef.current as HTMLDivElement;
+    if(child.contains(event.target as Node) && !moveMode){
+      return;
+    }
     const delta = -event.deltaY / 1000;
-    setCustomOption(scale + delta);
+    const result = scale + delta < 0.05? 0.05 : scale + delta;
+    setCustomOption(result);
   };
+
+  const onPinch = useCallback((event: React.TouchEvent) => {
+    if(!pinching){
+      return;
+    }
+    const points = Array.from(event.touches).map( point => ({ x: point.clientX, y: point.clientY }) );
+    const currentDistance = measureDistance(points[0], points[1]);
+    const oldDistance = distanceBetwwenFingers.current; 
+    let ratio = (currentDistance/oldDistance);
+    let _scale = Math.max(scale*ratio, 0.05);
+    setCustomOption(_scale)
+    distanceBetwwenFingers.current = currentDistance;
+  },[setCustomOption, pinching, scale])
+
+  const onTouchMove = useCallback( (event: React.TouchEvent) => {
+    const child = childRef.current as HTMLDivElement;
+    if(child.contains(event.target as Node) && !moveMode){
+      return;
+    }
+    switch(event.touches.length){
+      case 1: {
+        onDrag(event);
+        break;
+      }
+      case 2: {
+        onPinch(event);
+        break;
+      }
+    }
+  },[onDrag, onPinch, moveMode])
+
+  const setDistanceBetweenFingers = useCallback((event: React.TouchEvent)=>{
+    const point1 = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+    const point2 = { x: event.touches[1].clientX, y: event.touches[1].clientY };
+    const distance = measureDistance(point1, point2);
+    distanceBetwwenFingers.current = distance;
+    setPinching(true);
+  },[setPinching]);
+
+  const onTouchStart = useCallback((event: React.TouchEvent)=>{
+    const child = childRef.current as HTMLDivElement;
+      if(child.contains(event.target as Node) && !moveMode){
+        return;
+      }
+    switch(event.touches.length){
+      case 1: {
+        setPosition(event);
+        break;
+      }
+      case 2: {
+        setDistanceBetweenFingers(event);
+        break;
+      }
+    }
+  },[setPosition, setDistanceBetweenFingers, moveMode])
+
+
+  const onTouchEnd = useCallback(()=>{
+    setPinching(false);
+    distanceBetwwenFingers.current = 0;
+  },[setPinching])
+
 
   return (
     <div
@@ -221,13 +318,15 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
       onWheel={onWheel}
       onMouseDown={setPosition}
       onMouseMove={onDrag}
-      onTouchStart={setPosition}
-      onTouchMove={onDrag}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+      onTouchCancel={onTouchEnd}
       className={classes.Wrapper}
     >
       <div className={classes.Settings}>
         <div>
-          <Select
+          { !removeSelect && <Select
             className={classes.Select}
             value={option}
             onChange={onSelect}
@@ -245,22 +344,24 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit" }: Props) => {
                 {(customOption * 100).toFixed()}%{}
               </option>
             )}
-          </Select>
-          <Fab size="small" color="primary" onClick={onAddZoom}>
+          </Select>}
+          { !removeZoomControllers && <Fab size="small" color="primary" onClick={onAddZoom}>
             <Add />
-          </Fab>
-          <Fab
+          </Fab>}
+          {!removeZoomControllers && <Fab
             size="small"
             color="primary"
             onClick={onSubtractZoom}
             disabled={scale - 0.05 < 0}
           >
             <Remove />
-          </Fab>
+          </Fab>}
+          { !removePanTool && <Fab size="small" color={moveMode? "primary": "default"} onClick={() => setMoveMode(m => !m) } ><PanTool /></Fab>}
         </div>
       </div>
       <div ref={childRef} className={classes.Content}>
         {child}
+        {moveMode && <div ref={moveModeOverlayRef} className={classes.MoveModeOverlay} />}
       </div>
     </div>
   );

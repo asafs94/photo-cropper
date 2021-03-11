@@ -1,19 +1,20 @@
 import React from 'react';
-import AppCroppable from '../../../containers/AppCroppable';
-import { CroppableImage } from '../../../types/CroppableImage';
+import AppImageContainer from '../../../containers/AppImageContainer';
+import EditableImage from '../../../types/EditableImage';
 import useStyles from './styles'
 
 interface SixSquares_Props {
-    croppableImages?: Array<CroppableImage>
+    images?: Array<EditableImage>;
+    onImageContextMenu: (imageId: string) => (event: React.MouseEvent) => void;
 }
 
-export default function SixSquares({ croppableImages=[] }: SixSquares_Props) {
+export default function SixSquares({ images=[], onImageContextMenu }: SixSquares_Props) {
 
     const classes = useStyles();
     return (
         <div className={classes.Root}>
-            {croppableImages.map((croppable, index) => 
-                <AppCroppable className={classes.Square} key={croppable.id} id={croppable.id} />
+            {images.map((image, index) => 
+                <AppImageContainer onContextMenu={onImageContextMenu(image.id)} className={classes.Square} id={image.id} key={`${image.id}`} />
             )}
         </div>
     )

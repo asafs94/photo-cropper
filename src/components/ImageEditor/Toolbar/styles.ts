@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import { fade, makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => {
   const gap = theme.spacing(); 
@@ -41,6 +41,11 @@ const useStyles = makeStyles((theme) => {
       "& input":{
         padding: "3px 8px",
       },
+    },
+    TextShadow:{
+      textShadow: `4em 4em ${fade(theme.palette.text.primary, 0.5)}`,
+      fontSize: 'inherit',
+      fontWeight: 700
     }
   };
 });

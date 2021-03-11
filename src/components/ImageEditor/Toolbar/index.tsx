@@ -6,6 +6,7 @@ import {
   ButtonGroup,
   InputBase,
   Grid,
+  Tooltip,
 } from "@material-ui/core";
 import useStyles from "./styles";
 import {
@@ -15,6 +16,7 @@ import {
   FormatBold,
   FormatUnderlined,
   FormatItalic,
+  MoreHoriz,
 } from "@material-ui/icons";
 import FontSelect from "../../FontSelect";
 import { useAppFonts } from "../../../utils/hooks/fonts";
@@ -22,6 +24,8 @@ import ColorPicker from "../ColorPicker";
 import { TextStyle, HorizontalAlignment } from "../../../types";
 import { RGBColor } from "react-color";
 import TextBox from "../../../types/TextBox";
+import ShadowIcon from "../../../resources/icons/ShadowIcon";
+import ShadowPicker from "../ShadowPicker";
 
 interface Props {
   className?: string;
@@ -110,7 +114,7 @@ export default function Toolbar({
         <Grid item xs={2}>
           <ColorPicker disabled={!selectedTextbox} className={classes.Button} color={color} onChange={setColor} />
         </Grid>
-        <Grid item xs={5}>
+        <Grid item xs={4}>
           <ButtonGroup className={classes.ButtonGroup} disabled={!selectedTextbox}>
             <Button
               {...getProps(bold?.isBold || false)}
@@ -135,7 +139,7 @@ export default function Toolbar({
             </Button>
           </ButtonGroup>
         </Grid>
-        <Grid item xs={5}>
+        <Grid item xs={4}>
           <ButtonGroup className={classes.ButtonGroup} disabled={!selectedTextbox}>
             <Button {...getAlignmentProps("left")} className={classes.Button}>
               <FormatAlignLeft fontSize="inherit" />
@@ -147,6 +151,13 @@ export default function Toolbar({
               <FormatAlignRight fontSize="inherit" />
             </Button>
           </ButtonGroup>
+        </Grid>
+        <Grid item xs={2}>
+          <Tooltip title={"Coming soon..."}>
+            <div>
+              <ShadowPicker disabled={!selectedTextbox || true} classes={{ button: classes.Button }} />
+            </div>
+          </Tooltip>
         </Grid>
       </Grid>
     </Paper>

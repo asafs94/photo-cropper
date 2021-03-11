@@ -91,7 +91,6 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit", removeSelect, rem
   const [moveMode, setMoveMode] = useState(false);
   const [pinching, setPinching] = useState(false);
   const distanceBetwwenFingers = useRef(0);
-  const fromScale = useRef(0);
   const mousePosition = useRef({ x: 0, y: 0 });
   const ref = useRef<any>();
   const childRef = useRef<any>();
@@ -192,7 +191,7 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit", removeSelect, rem
     if(selectOptions.includes(option)){
       setTranslate({ x: 0, y: 0 })
     }
-  }, [fitScale, option, setTranslate]);
+  }, [option, fitScale, setTranslate, setZoom]);
 
   const onDrag = useCallback(
     (event: React.MouseEvent | React.TouchEvent) => {
@@ -220,7 +219,7 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit", removeSelect, rem
         });
       }
     },
-    [setTranslate, dragging, moveMode]
+    [setTranslate, dragging, moveMode, scale]
   );
 
   const onDrop = useCallback(
@@ -259,9 +258,10 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit", removeSelect, rem
     const currentDistance = measureDistance(points[0], points[1]);
     const oldDistance = distanceBetwwenFingers.current; 
     let ratio = (currentDistance/oldDistance);
-    let _scale = Math.max(fromScale.current*ratio, 0.05);
+    let _scale = Math.max(scale*ratio, 0.05);
     setCustomOption(_scale)
-  },[setCustomOption, pinching])
+    distanceBetwwenFingers.current = currentDistance;
+  },[setCustomOption, pinching, scale])
 
   const onTouchMove = useCallback( (event: React.TouchEvent) => {
     const child = childRef.current as HTMLDivElement;
@@ -285,9 +285,8 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit", removeSelect, rem
     const point2 = { x: event.touches[1].clientX, y: event.touches[1].clientY };
     const distance = measureDistance(point1, point2);
     distanceBetwwenFingers.current = distance;
-    fromScale.current = scale
     setPinching(true);
-  },[setPinching, scale]);
+  },[setPinching]);
 
   const onTouchStart = useCallback((event: React.TouchEvent)=>{
     const child = childRef.current as HTMLDivElement;
@@ -310,7 +309,6 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit", removeSelect, rem
   const onTouchEnd = useCallback(()=>{
     setPinching(false);
     distanceBetwwenFingers.current = 0;
-    fromScale.current = 0;
   },[setPinching])
 
 

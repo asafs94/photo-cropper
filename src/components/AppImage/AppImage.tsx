@@ -18,7 +18,8 @@ interface Props {
   setCrop: (crop: Position) => void,
   textboxes: TextBox[],
   onClick?: (event: React.MouseEvent) => void,
-  locked?: boolean
+  locked?: boolean,
+  zoomSensitivity?: number,
 }
 
 const useStyles = makeStyles((theme) => {
@@ -46,7 +47,8 @@ export default function AppImage({
   setCrop,
   textboxes,
   onClick,
-  locked=false
+  locked=false,
+  zoomSensitivity
 }: Props) {
 
   const classes = useStyles()
@@ -62,6 +64,7 @@ export default function AppImage({
         setZoom={setZoom}
         zoom={zoom}
         position={crop}
+        zoomSensitivity={zoomSensitivity}
       />
       {textboxes.map((textbox) => (
         <DisplayText textbox={textbox} key={textbox.id} parent={parentRef?.current}></DisplayText>

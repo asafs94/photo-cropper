@@ -1,12 +1,12 @@
 import { IconButton, Paper, TextField } from '@material-ui/core';
-import { PhotoCamera, Print, Refresh } from '@material-ui/icons';
+import { PhotoCamera, Print, Refresh, Settings } from '@material-ui/icons';
 
 import React, { useCallback, useState } from 'react'
 import { lineBreakCount } from '../../utils';
 import ImageUpload from '../ImageUpload'
 import useStyles from './styles';
 
-export default function Toolbar({onUpload, amount, headerNote, footerNote, setHeaderNote, setFooterNote}: any) {
+export default function Toolbar({onUpload, amount, headerNote, footerNote, setHeaderNote, setFooterNote, openSettings}: any) {
 
     const [files, setFiles] = useState<any>([]);
     
@@ -49,6 +49,7 @@ export default function Toolbar({onUpload, amount, headerNote, footerNote, setHe
                 <IconButton color="primary" onClick={window.print}>
                     <Print />
                 </IconButton>
+                <IconButton onClick={openSettings}><Settings/></IconButton>
             </Paper>
             <div>
             <TextField

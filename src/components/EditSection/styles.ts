@@ -9,6 +9,8 @@ export default makeStyles<Theme, Props>((theme) => {
     Toolbar: {
       padding: theme.spacing(),
       marginBottom: theme.spacing(),
+      display: 'flex',
+      justifyContent: 'space-between'
     },
     UploadPreview: {
       width: 200,

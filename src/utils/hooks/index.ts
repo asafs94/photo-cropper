@@ -1,7 +1,17 @@
-import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { getItemById, setItemById } from "..";
+import { DispatchContext, StateContext } from "../../hoc/Store";
 import { IdentifiedItem } from "../../types";
 
+
+
+export function useStore(){
+    return useContext(StateContext)
+}
+
+export function useDispatch(){
+    return useContext(DispatchContext);
+}
 
 
 export function useSingle<T extends IdentifiedItem>( id: any, array: T[], setArray: Dispatch<SetStateAction<T[]>>){

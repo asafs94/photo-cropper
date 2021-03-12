@@ -75,12 +75,13 @@ interface Props {
   defaultOption?: "fit" | number;
   removeSelect?: boolean,
   removeZoomControllers?: boolean,
-  removePanTool?: boolean
+  removePanTool?: boolean,
+  zoomSpeed?: number
 }
 
 const selectOptions: Array<"fit" | number> = ["fit", 0.25, 0.5, 0.75, 1];
 
-const ZoomWrapper = ({ children: child, defaultOption = "fit", removeSelect, removeZoomControllers, removePanTool }: Props) => {
+const ZoomWrapper = ({ children: child, defaultOption = "fit", removeSelect, removeZoomControllers, removePanTool, zoomSpeed=1 }: Props) => {
   const [scale, setScale] = useState(1);
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
   const [option, setOption] = useStateWithPromise<"fit" | number>(defaultOption);
@@ -246,7 +247,7 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit", removeSelect, rem
       return;
     }
     const delta = -event.deltaY / 1000;
-    const result = scale + delta < 0.05? 0.05 : scale + delta;
+    const result = scale + delta < 0.05? 0.05 : scale + delta*zoomSpeed;
     setCustomOption(result);
   };
 

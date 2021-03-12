@@ -1,4 +1,4 @@
-import { Dialog, DialogProps, makeStyles, Theme, useMediaQuery } from '@material-ui/core'
+import { Dialog, DialogProps, makeStyles } from '@material-ui/core'
 import React from 'react'
 
 const useStyles = makeStyles((theme)=>{
@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme)=>{
                 height: '100%',
                 maxWidth: 'unset',
                 maxHeight: 'unset',
+                borderRadius: 0
             }
         },
     }

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useRef, useState } from "react";
+import React, { useCallback, useContext, useMemo, useRef, useState } from "react";
 import "./App.css";
 import SixSquares from "./components/Templates/SixSquares";
 import A4 from "./components/Papers/A4";
@@ -8,7 +8,6 @@ import {
   Theme,
   useMediaQuery,
   Typography,
-  Dialog,
 } from "@material-ui/core";
 import EditSection from "./components/EditSection";
 import { ImageContext } from "./hoc/ImageProvider";
@@ -18,11 +17,13 @@ import { useToggleable } from "./utils/hooks/togglables";
 import { Menu } from "@material-ui/icons";
 import ImageDropZone from "./hoc/ImageDropZone";
 import TextWithLineBreaks from "./components/TextWithLinebreaks";
-import ImageEditor from "./components/ImageEditor";
 import { AppContextMenuContext } from "./hoc/AppContextMenu";
 import { byId } from "./utils";
 import { Position } from "./types";
-import ResponsiveModal from "./components/ResponsiveModal";
+import AppModal from "./containers/AppModal";
+import { useDispatch, useStore } from "./utils/hooks";
+import { ModalType } from "./types/enums";
+import { UIDispatcher } from "./types/store/dispatchers/ui";
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
   const appRef = useRef<any>();
   const classes = useStyles();
   const imageCurrentSize = "85mm"
+  const { settings } = useStore();
   const [drawerOpen, toggleDrawer] = useToggleable(false);
   const [headerNote, setHeaderNote] = useState("");
   const [footerNote, setFooterNote] = useState("");
@@ -37,9 +39,15 @@ function App() {
   const [dialogPayload, setDialogPayload] = useState<{ open: boolean, imageId?: string }>({ open: false });
   const [closeEditor, setCloseEditor] = useState< {resolve: Function} | null>(null);
   const openContextMenu = useContext(AppContextMenuContext); 
+  const dispatch = useDispatch()
+  const uiDispatcher =  useMemo( ()=> new UIDispatcher(dispatch),[dispatch]);
   const smallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
+
+  const openSettings = useCallback(()=>{
+    uiDispatcher.openModal({ type: ModalType.Settings, payload: {} })
+  },[uiDispatcher])
 
   const setImagesCropAndZoom = useCallback((crop: Position, zoom: number) => {
     setImages( images => {
@@ -76,7 +84,8 @@ function App() {
         break;
       }
       case "edit": {
-        setDialogPayload({ open: true, imageId });
+        uiDispatcher
+        .openModal({ type: ModalType.ImageEditor, payload: { imageId, imageSize: { width: imageCurrentSize, height: imageCurrentSize } } })
         break;
       }
       case "lock": {
@@ -121,7 +130,7 @@ function App() {
           <Menu />
         </Fab>
         <main className={classes.Main}>
-          <ZoomWrapper>
+          <ZoomWrapper zoomSpeed={settings.wheelSensitivity.viewer}>
             <A4 className={classes.PrintingPaper} rootRef={paperRef}>
               <Typography component="header" className={classes.Note}>
                 <TextWithLineBreaks>{headerNote}</TextWithLineBreaks>
@@ -133,13 +142,7 @@ function App() {
             </A4>
           </ZoomWrapper>
         </main>
-        <ResponsiveModal open={dialogPayload.open} onClose={initEditorCloseRequest} >
-          <ImageEditor 
-            imageId={dialogPayload.imageId} 
-            imageSize={{ height: imageCurrentSize, width: imageCurrentSize }} 
-            onClose={()=>setDialogPayload({ open: false })} 
-            closeEditor={closeEditor} />
-        </ResponsiveModal>
+        <AppModal />
         <Drawer
           className={classes.DrawerWrapper}
           onClose={toggleDrawer}
@@ -157,6 +160,7 @@ function App() {
             footerNote={footerNote}
             setHeaderNote={setHeaderNote}
             setFooterNote={setFooterNote}
+            openSettings={openSettings}
           />
         </Drawer>
       </div>

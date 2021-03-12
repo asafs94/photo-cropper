@@ -10,3 +10,9 @@ export enum DotPosition {
     BottomLeft="bottom-left",
     BottomCenter="bottom-center"
 }
+
+
+export enum ModalType {
+    ImageEditor,
+    Settings,
+}

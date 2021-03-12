@@ -9,10 +9,11 @@ import { ThemeProvider } from '@material-ui/core';
 import AppAlertProvider from './hoc/AppAlerts';
 import theme from './theme/default';
 import AppFonts from './hoc/AppFonts';
+import Store from './hoc/Store';
 
 ReactDOM.render(
   <React.StrictMode>
-   
+      <Store>
       <ImageProvider>
         <ThemeProvider theme={theme}>
         <AppAlertProvider>
@@ -24,7 +25,7 @@ ReactDOM.render(
         </AppAlertProvider>
         </ThemeProvider>
       </ImageProvider>
-    
+      </Store>
   </React.StrictMode>,
   document.getElementById('root')
 );

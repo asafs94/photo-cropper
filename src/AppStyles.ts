@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core";
 
 export default makeStyles((theme) => {
-  const drawerWidth = 200 + theme.spacing(2);
+  const drawerWidth = 225 + theme.spacing(2);
   return {
     Root: {
       height: "100%",

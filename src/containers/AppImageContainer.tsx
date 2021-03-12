@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import AppImage from "../components/AppImage/AppImage";
 import { useEditableImage } from "../utils/hooks/single-image";
 import { AlertContext } from '../hoc/AppAlerts';
+import { useStore } from "../utils/hooks";
 
 export default function AppImageContainer({
   id,
@@ -10,13 +11,13 @@ export default function AppImageContainer({
   onContextMenu
 }: any) {
   const { image, setCrop: setPosition, setZoom, lock, unlock } = useEditableImage(id); 
+  const { settings } = useStore();
   const setAlert = useContext(AlertContext)
   if (!image) {
     return null;
   }
 
   const { zoom, crop, url, textboxes, locked } = image;
-  
 
   const handleClick = (event: React.MouseEvent) => {
    if(locked){
@@ -37,6 +38,7 @@ export default function AppImageContainer({
           onContextMenu={onContextMenu}
           onClick={handleClick}
           locked={locked}
+          zoomSensitivity={settings.wheelSensitivity.cropper}
         />
   );
 }

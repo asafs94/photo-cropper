@@ -9,7 +9,7 @@ export default makeStyles<Theme, StyleProps>((theme) => {
     Root: {
       height: '100%',
       width: '100%',
-      background: fade(theme.palette.common.black, 0.2),
+      background: theme.palette.background.default,
       padding: theme.spacing(),
       boxSizing: 'border-box',
       display: "grid",
@@ -17,6 +17,7 @@ export default makeStyles<Theme, StyleProps>((theme) => {
       gridTemplateRows: "auto 1fr auto",
       justifyItems: "center",
       gridGap: theme.spacing(),
+      borderRadius: 0,
       
     },
     Toolbar: {

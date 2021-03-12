@@ -91,6 +91,7 @@ export default function DraggableBackground({
         cropSize={cropSize}
         disableAutomaticStylesInjection={isPrintView || disabled}
         zoom={zoom}
+        zoomSpeed={zoomSensitivity}
         image={src}
         onCropChange={returnFunctionIfEnabled(setPosition)}
         onZoomChange={returnFunctionIfEnabled(setZoom)}

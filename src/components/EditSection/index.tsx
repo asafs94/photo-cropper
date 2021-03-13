@@ -53,17 +53,18 @@ export default function Toolbar({onUpload, amount, headerNote, footerNote, setHe
             </Paper>
             <div>
             <TextField
-                label="Header Note"
+                label="מס הזמנה"
                 className={classes.TextField}
                 multiline
                 rows={2}
                 name="headerNote"
                 variant="outlined"
+                
                 value={headerNote}
                 onChange={handleChange}
                 />
             <TextField
-                label="Footer Note"
+                label="תוספות"
                 className={classes.TextField}
                 multiline
                 rows={2}

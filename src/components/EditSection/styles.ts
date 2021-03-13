@@ -28,6 +28,7 @@ export default makeStyles<Theme, Props>((theme) => {
     },
     TextField:{
       margin: theme.spacing(),
+      direction: 'rtl'
     }
   };
 });

@@ -16,7 +16,6 @@ import {
   FormatBold,
   FormatUnderlined,
   FormatItalic,
-  MoreHoriz,
 } from "@material-ui/icons";
 import FontSelect from "../../FontSelect";
 import { useAppFonts } from "../../../utils/hooks/fonts";
@@ -24,8 +23,9 @@ import ColorPicker from "../ColorPicker";
 import { TextStyle, HorizontalAlignment } from "../../../types";
 import { RGBColor } from "react-color";
 import TextBox from "../../../types/TextBox";
-import ShadowIcon from "../../../resources/icons/ShadowIcon";
 import ShadowPicker from "../ShadowPicker";
+import { TextShadowPayload, TextStrokePayload } from "../../../types/StylesDefinitions";
+import StrokePicker from "../StrokePicker";
 
 interface Props {
   className?: string;
@@ -36,7 +36,9 @@ interface Props {
     setAlignment: (alignment: "center" | "left" | "right") => void;
     setFontSize: (fontSize: number) => void;
     setFontFamily: (fontFamily: string) => void;
-    setColor: (color: RGBColor) => void
+    setColor: (color: RGBColor) => void,
+    setTextShadow: (textShadow: TextShadowPayload) => void,
+    setTextStroke: (textStroke: Partial<TextStrokePayload>) => void
   }
 }
 
@@ -50,12 +52,14 @@ export default function Toolbar({
     setFontSize: () => {},
     setFontFamily: () => {},
     setColor: () => {},
+    setTextShadow: () => {},
+    setTextStroke: () =>{}
   },
 }: Props) {
   const classes = useStyles();
   const rootClassName = [classes.Root, className].join(" ");
-  const { toggleStyle, setAlignment, setFontSize, setFontFamily, setColor } = selectedTextboxHandlers;
-  const { bold, italic, underlined, alignment, fontSize, fontFamily, color } = selectedTextbox?.state || {};
+  const { toggleStyle, setAlignment, setFontSize, setFontFamily, setColor, setTextShadow, setTextStroke } = selectedTextboxHandlers;
+  const { bold, italic, underlined, alignment, fontSize, fontFamily, color, shadow, stroke } = selectedTextbox?.state || {};
   const { fontsByLanguage } = useAppFonts()
 
   const _toggleStyle = (style: TextStyle) => () => toggleStyle(style);
@@ -152,12 +156,11 @@ export default function Toolbar({
             </Button>
           </ButtonGroup>
         </Grid>
-        <Grid item xs={2}>
-          <Tooltip title={"Coming soon..."}>
-            <div>
-              <ShadowPicker disabled={!selectedTextbox || true} classes={{ button: classes.Button }} />
-            </div>
-          </Tooltip>
+        <Grid item xs={1}>
+              <ShadowPicker textShadow={shadow} onChange={setTextShadow} disabled={!selectedTextbox} classes={{ button: classes.Button }} />
+        </Grid>
+        <Grid item xs={1}>
+              <StrokePicker stroke={stroke} onChange={setTextStroke} classes={{ button: classes.Button }} disabled={!selectedTextbox} />
         </Grid>
       </Grid>
     </Paper>

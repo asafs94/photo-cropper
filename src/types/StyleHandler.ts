@@ -2,7 +2,7 @@ import { CSSProperties } from "@material-ui/styles";
 import { RGBColor } from "react-color";
 import { HorizontalAlignment } from ".";
 import { rgbColorsAreEqual } from "../utils/textStylesUtil";
-import { FontWeight, TextShadow, TextShadowPayload } from "./StylesDefinitions";
+import { FontWeight, TextShadow, TextShadowPayload, TextStroke, TextStrokePayload } from "./StylesDefinitions";
 import TextState from "./TextboxState";
 
 export default class StyleHandler {
@@ -39,7 +39,7 @@ export default class StyleHandler {
     }
 
     private getStyle(state: TextState): CSSProperties{
-        const { bold, underlined, italic, alignment, shadow, color, fontFamily, fontSize } = state;
+        const { bold, underlined, italic, alignment, shadow, color, fontFamily, fontSize, stroke } = state;
         return {
             fontWeight: bold.value,
             fontStyle: italic? "italic" : "unset",
@@ -49,6 +49,7 @@ export default class StyleHandler {
             color: `rgba(${color.r}, ${color.g},${color.b},${color.a || '1'})`,
             fontFamily,
             fontSize,
+            WebkitTextStroke: stroke.parseToCss(),
         };
     }
 
@@ -98,9 +99,15 @@ export default class StyleHandler {
         this.setState({ color: value })
     }
 
-    setTextShadow( value: TextShadowPayload){
-        this.setState({ shadow: new TextShadow(value) });
+    setTextShadow( value: Partial<TextShadowPayload>){
+        const textShadow = this.state.shadow;
+        textShadow.set(value);
+        this.setState({ shadow: textShadow })
     }
 
-    
+    setTextStroke( payload: Partial<TextStrokePayload> ){
+        const textStroke = this.state.stroke;
+        textStroke.set(payload);
+        this.setState({ stroke: textStroke });
+    }
 }

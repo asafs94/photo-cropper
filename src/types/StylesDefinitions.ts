@@ -40,6 +40,16 @@ export class TextShadow {
         this.color = color;
     }
 
+    set(payload: Partial<TextShadowPayload>){
+        Object.keys(payload).forEach( k=>{
+            const key = k as keyof TextShadowPayload;
+            const value = payload[key];
+            if(typeof value !== "undefined"){
+                this[key] = value as any;
+            }
+        }) 
+    }
+
     parseToCss(){
         const { color } = this;
         const parsedColor = color? `rgba(${color.r},${color.g},${color.b},${color.a})` : '';
@@ -89,4 +99,31 @@ export class FontWeightHandler {
     }
 
 
+}
+
+
+export class TextStroke {
+    width: number;
+    color: RGBColor;
+
+    constructor(width: number, color: RGBColor){
+        this.width = width;
+        this.color = color;
+    }
+
+    set(payload: Partial<TextStrokePayload>){
+        this.width = typeof payload.width === "undefined"? this.width : payload.width;
+        this.color =typeof payload.color === "undefined"? this.color : payload.color;
+    }
+
+    parseToCss(){
+        const { width, color: { r,g,b,a }  } = this;
+        return `${width}px rgba(${r}, ${g}, ${b}, ${a})`;
+    }
+}
+
+
+export interface TextStrokePayload {
+    width: number;
+    color: RGBColor;
 }

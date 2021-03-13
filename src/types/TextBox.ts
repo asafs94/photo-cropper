@@ -3,7 +3,7 @@ import { v4 } from "uuid";
 import { HorizontalAlignment, Position } from ".";
 import { positionsAreEqual } from "../utils";
 import StyleHandler from "./StyleHandler";
-import { FontWeight, FontWeightHandler, TextShadow } from "./StylesDefinitions";
+import { FontWeight, FontWeightHandler, TextShadow, TextShadowPayload, TextStroke, TextStrokePayload } from "./StylesDefinitions";
 import TextState from "./TextboxState";
 
 
@@ -47,6 +47,7 @@ export default class TextBox {
       fontFamily: "Roboto",
       color: { r: 0, g: 0, b: 0, a: 1 },
       shadow: new TextShadow(),
+      stroke: new TextStroke(0,{ r:0, g:0, b: 0, a: 0 })
     });
     this._id = id || v4();
     this.content = content || "";
@@ -102,6 +103,14 @@ export default class TextBox {
 
   setColor = (color: RGBColor) => {
     this.styleHandler.setColor(color)
+  }
+
+  setTextShadow= ( textShadow: Partial<TextShadowPayload> ) => {
+    this.styleHandler.setTextShadow(textShadow)
+  }
+
+  setTextStroke = ( stroke: Partial<TextStrokePayload> ) => {
+    this.styleHandler.setTextStroke(stroke);
   }
 
   clone = () => {

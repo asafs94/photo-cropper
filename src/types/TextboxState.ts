@@ -1,6 +1,6 @@
 import { RGBColor } from "react-color";
 import { HorizontalAlignment } from ".";
-import { FontWeightHandler, TextShadow } from "./StylesDefinitions";
+import { FontWeightHandler, TextShadow, TextStroke } from "./StylesDefinitions";
 
 export default interface TextState {
     bold: FontWeightHandler;
@@ -11,4 +11,5 @@ export default interface TextState {
     fontFamily: string;
     color: RGBColor,
     shadow: TextShadow,
+    stroke: TextStroke
 }

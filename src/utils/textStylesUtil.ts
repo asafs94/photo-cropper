@@ -77,7 +77,7 @@ export const parseStyleToState = (style: CSSProperties = {}) => {
     fontSize: parseFontSizetoNumber(fontSize),
     alignment: getAlignment(textAlign),
     fontFamily: fontFamily || "Roboto",
-    color: colorToRgba(color)
+    color: colorToRgba(color),
   };
 };
 

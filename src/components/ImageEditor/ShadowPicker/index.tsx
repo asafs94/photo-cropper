@@ -1,20 +1,39 @@
 import { Button, Popover, Slider, Typography } from "@material-ui/core";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { AlphaPicker, Color, RGBColor, TwitterPicker } from "react-color";
 import ShadowIcon from "../../../resources/icons/ShadowIcon";
+import { TextShadow, TextShadowPayload } from "../../../types/StylesDefinitions";
 
 interface Props {
   disabled?: boolean;
   classes: {
     button?: string;
   };
+  onChange: (textShadow: TextShadowPayload) => void,
+  textShadow?: TextShadow
 }
 
-export default function ShadowPicker({ disabled, classes = {} }: Props) {
+
+export default function ShadowPicker({ disabled, classes = {}, onChange, textShadow = new TextShadow({ h:0, v:0, blurRadius: 0 }) }: Props) {
   const [open, setOpen] = useState(false);
-  const [vShadow, setV] = useState(0);
-  const [hShadow, setH] = useState(0);
-  const [blur, setBlur] = useState(0);
+  const [vShadow, setV] = useState(textShadow.v);
+  const [hShadow, setH] = useState(textShadow.h);
+  const [blur, setBlur] = useState(textShadow.blurRadius);
+  const [color, setColor] = useState(textShadow.color || { r: 0, b:0, g: 0, a: 1 });
   const buttonRef = useRef<any>();
+
+  useEffect(()=>{
+    onChange({ h: hShadow, v: vShadow, blurRadius: blur, color: color });
+  },[blur, color, hShadow, vShadow, onChange])
+
+  const setAlpha = useCallback((a: number)=>{
+    setColor(color => {
+      return {
+        ...color,
+        a,
+      }
+    })
+  },[setColor])
 
   const setValue = (setter: React.Dispatch<React.SetStateAction<number>>) => (
     event: React.ChangeEvent<{}>,
@@ -60,7 +79,7 @@ export default function ShadowPicker({ disabled, classes = {} }: Props) {
           horizontal: "center",
         }}
       >
-        <div style={{ width: 250, padding: 20 }}>
+        <div style={{ width: 260, padding: 20 }}>
           <Typography gutterBottom>
             Vertical Offset
           </Typography>
@@ -89,6 +108,10 @@ export default function ShadowPicker({ disabled, classes = {} }: Props) {
             onChange={(e,v)=> setBlur(v as number)}
             marks={marks(blur)}
           />
+          <Typography gutterBottom variant='button' color='textSecondary' >Color</Typography>
+          <TwitterPicker color={color} onChange={(color)=> setColor(c => ({ ...color.rgb, a: c.a }))} styles={{ default: { card: { borderRadius: 0, boxShadow: 'none' },  body: { padding: 0 } } }} width='100%' triangle={"hide"} />
+          <Typography gutterBottom >Alpha</Typography>
+          <AlphaPicker color={color} onChange={(color)=> setAlpha(color.rgb.a as number)} width={"calc(100% - 9px)"} />
         </div>
       </Popover>
     </div>

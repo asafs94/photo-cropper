@@ -32,8 +32,8 @@ const ImageEditor = ({ imageId, imageSize, onClose, closeRequest }: ImageEditorP
     const { setTextboxes, submitTextboxes, textboxes, dirty } = useImageTextboxes(
       imageId
     );
-    const { textbox: selectedTextbox, setAlignment, setColor, setFontFamily, setFontSize, toggleStyle } = useSingleTextbox(selected, textboxes, setTextboxes);
-    const selectedTextboxHandlers = { setAlignment, setColor, setFontFamily, setFontSize, toggleStyle };
+    const { textbox: selectedTextbox, setAlignment, setColor, setFontFamily, setFontSize, toggleStyle, setTextShadow, setTextStroke } = useSingleTextbox(selected, textboxes, setTextboxes);
+    const selectedTextboxHandlers = { setAlignment, setColor, setFontFamily, setFontSize, toggleStyle, setTextShadow, setTextStroke };
     const dragParentRef = useRef();
     const { settings } = useStore();
   

@@ -3,6 +3,7 @@ import { RGBColor } from "react-color";
 import { useSingle } from ".";
 import { capitalize } from "..";
 import { HorizontalAlignment, TextStyle } from "../../types";
+import { TextShadowPayload } from "../../types/StylesDefinitions";
 import TextBox from "../../types/TextBox";
 
 
@@ -53,7 +54,21 @@ const useSingleTextbox = (id: string | undefined, textboxes: TextBox[], setTextB
         })
     },[setTextbox])
 
-    return { textbox, setContent, setFontFamily, setFontSize, toggleStyle, setColor, setAlignment };
+    const setTextShadow = useCallback((textShadow: Partial<TextShadowPayload>)=>{
+        setTextbox( _textbox => {
+            _textbox.setTextShadow(textShadow);
+            return _textbox;
+        } )
+    },[setTextbox])
+
+    const setTextStroke = useCallback(( textStroke: Partial<{ width: number, color: RGBColor }> )=>{
+        setTextbox( _textbox => {
+            _textbox.setTextStroke(textStroke);
+            return _textbox;
+        } )
+    },[setTextbox])
+
+    return { textbox, setContent, setFontFamily, setFontSize, toggleStyle, setColor, setAlignment, setTextShadow, setTextStroke };
 }
 
 

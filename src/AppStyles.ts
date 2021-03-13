@@ -37,7 +37,7 @@ export default makeStyles((theme) => {
         alignItems: "center",
     },
     Note: {
-      color: theme.palette.text.secondary,
+      color: theme.palette.text.primary,
       textAlign: "center",
       padding: theme.spacing(),
     },

@@ -133,10 +133,12 @@ function App() {
           <ZoomWrapper zoomSpeed={settings.wheelSensitivity.viewer}>
             <A4 className={classes.PrintingPaper} rootRef={paperRef}>
               <Typography component="header" className={classes.Note}>
+                <Typography style={{ textDecoration: 'underline', fontWeight: 600 }}>מס' הזמנה</Typography>
                 <TextWithLineBreaks>{headerNote}</TextWithLineBreaks>
               </Typography>
               <SixSquares images={images} onImageContextMenu={openImageContextMenu}/>
               <Typography component="footer" className={classes.Note}>
+              <Typography style={{ textDecoration: 'underline', fontWeight: 600 }}>תוספות</Typography>
                 <TextWithLineBreaks>{footerNote}</TextWithLineBreaks>
               </Typography>
             </A4>

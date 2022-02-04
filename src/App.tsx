@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useMemo, useRef, useState } from "react";
 import "./App.css";
-import SixSquares from "./components/Templates/SixSquares";
 import A4 from "./components/Papers/A4";
 import {
   Drawer,
@@ -10,7 +9,6 @@ import {
   Typography,
 } from "@material-ui/core";
 import EditSection from "./components/EditSection";
-import { ImageContext } from "./hoc/ImageProvider";
 import useStyles from "./AppStyles";
 import ZoomWrapper from "./components/ZoomWrapper";
 import { useToggleable } from "./utils/hooks/togglables";
@@ -24,7 +22,7 @@ import AppModal from "./containers/AppModal";
 import { useDispatch, useStore } from "./utils/hooks";
 import { ModalType } from "./types/enums";
 import { UIDispatcher } from "./types/store/dispatchers/ui";
-
+import { ImageContext } from "./hoc/ImageProvider";
 
 function App() {
   const paperRef = useRef<any>();
@@ -34,66 +32,67 @@ function App() {
   const { settings } = useStore();
   const [drawerOpen, toggleDrawer] = useToggleable(false);
   const [headerNote, setHeaderNote] = useState("");
-  const [footerNote, setFooterNote] = useState("");
-  const { images, uploadFiles, onClear, setSingleImage, setImages } = useContext(ImageContext);
+  const { images, uploadFiles, onClear, setSingleImage, setImages, template, toggleTemplates } = useContext(ImageContext);
   const [dialogPayload, setDialogPayload] = useState<{ open: boolean, imageId?: string }>({ open: false });
-  const [closeEditor, setCloseEditor] = useState< {resolve: Function} | null>(null);
-  const openContextMenu = useContext(AppContextMenuContext); 
+  const [closeEditor, setCloseEditor] = useState<{ resolve: Function } | null>(null);
+  const openContextMenu = useContext(AppContextMenuContext);
   const dispatch = useDispatch()
-  const uiDispatcher =  useMemo( ()=> new UIDispatcher(dispatch),[dispatch]);
+
+  const uiDispatcher = useMemo(() => new UIDispatcher(dispatch), [dispatch]);
   const smallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
 
-  const openSettings = useCallback(()=>{
+  const openSettings = useCallback(() => {
     uiDispatcher.openModal({ type: ModalType.Settings, payload: {} })
-  },[uiDispatcher])
+  }, [uiDispatcher])
 
   const setImagesCropAndZoom = useCallback((crop: Position, zoom: number) => {
-    setImages( images => {
-      return images.map( image => {
+    setImages(images => {
+      return images.map(image => {
         image.crop = crop;
         image.zoom = zoom;
         return image;
-      } )
-    } )
-  },[setImages])
+      })
+    })
+  }, [setImages])
 
   const openImageContextMenu = (id: string) => async (event: React.MouseEvent) => {
     const image = images.find(byId(id));
-    const value = await new Promise( (resolve, reject) => {
-      openContextMenu({ 
-        event, 
-        promise: {resolve, reject}, 
+    const value = await new Promise((resolve, reject) => {
+      openContextMenu({
+        event,
+        promise: { resolve, reject },
         options: [
-          { value: 'apply-to-all', text: 'Apply to All (Zoom and Crop)' }, 
+          { value: 'apply-to-all', text: 'Apply to All (Zoom and Crop)' },
           { value: 'edit', text: 'Edit' },
-          { value: image?.locked? 'unlock' : 'lock', text: image?.locked? "Unlock" : "Lock"}
-        ] })
+          { value: image?.locked ? 'unlock' : 'lock', text: image?.locked ? "Unlock" : "Lock" }
+        ]
+      })
     });
     onContextMenuClick({ imageId: id, value })
   }
 
-  const onContextMenuClick = ({ imageId, value }: any) =>{
+  const onContextMenuClick = ({ imageId, value }: any) => {
     const image = images.find(byId(imageId));
-    switch (value){
-      case "apply-to-all":{
-        if(image){
+    switch (value) {
+      case "apply-to-all": {
+        if (image) {
           setImagesCropAndZoom(image?.crop, image.zoom);
         }
         break;
       }
       case "edit": {
         uiDispatcher
-        .openModal({ type: ModalType.ImageEditor, payload: { imageId, imageSize: { width: imageCurrentSize, height: imageCurrentSize } } })
+          .openModal({ type: ModalType.ImageEditor, payload: { imageId, imageSize: { width: imageCurrentSize, height: imageCurrentSize } } })
         break;
       }
       case "lock": {
         setSingleImage(imageId)(
-          image => { 
-            image.locked = true; 
-            return image; 
-        });
+          image => {
+            image.locked = true;
+            return image;
+          });
         break;
       }
       case "unlock": {
@@ -109,64 +108,60 @@ function App() {
   }
 
   const initEditorCloseRequest = () => {
-    new Promise<any>( (resolve) => {
+    new Promise<any>((resolve) => {
       setCloseEditor({ resolve });
     }).then(() => {
       setDialogPayload({ open: false });
-    }).finally( ()=>{
+    }).finally(() => {
       setCloseEditor(null);
     })
   }
 
   return (
-    <ImageDropZone onDrop={uploadFiles}>
-      <div className={classes.Root} ref={appRef}>
-        <Fab
-          className={classes.DrawerFab}
-          size="small"
-          color="primary"
-          onClick={toggleDrawer}
-        >
-          <Menu />
-        </Fab>
-        <main className={classes.Main}>
-          <ZoomWrapper zoomSpeed={settings.wheelSensitivity.viewer}>
-            <A4 className={classes.PrintingPaper} rootRef={paperRef}>
-              <Typography component="header" className={classes.Note}>
-                <Typography style={{ textDecoration: 'underline', fontWeight: 600 }}>מס' הזמנה</Typography>
-                <TextWithLineBreaks>{headerNote}</TextWithLineBreaks>
-              </Typography>
-              <SixSquares images={images} onImageContextMenu={openImageContextMenu}/>
-              <Typography component="footer" className={classes.Note}>
-              <Typography style={{ textDecoration: 'underline', fontWeight: 600 }}>תוספות</Typography>
-                <TextWithLineBreaks>{footerNote}</TextWithLineBreaks>
-              </Typography>
-            </A4>
-          </ZoomWrapper>
-        </main>
-        <AppModal />
-        <Drawer
-          className={classes.DrawerWrapper}
-          onClose={toggleDrawer}
-          open={drawerOpen}
-          classes={{ paper: classes.Drawer }}
-          variant={smallScreen ? "temporary" : "permanent"}
-          anchor="right"
-        >
-          <EditSection
-            onUpload={uploadFiles}
-            loaded={!!images.length}
-            onClear={onClear}
-            amount={6}
-            headerNote={headerNote}
-            footerNote={footerNote}
-            setHeaderNote={setHeaderNote}
-            setFooterNote={setFooterNote}
-            openSettings={openSettings}
-          />
-        </Drawer>
-      </div>
-    </ImageDropZone>
+      <ImageDropZone onDrop={uploadFiles}>
+        <div className={classes.Root} ref={appRef}>
+          <Fab
+            className={classes.DrawerFab}
+            size="small"
+            color="primary"
+            onClick={toggleDrawer}
+          >
+            <Menu />
+          </Fab>
+          <main className={classes.Main}>
+            <ZoomWrapper zoomSpeed={settings.wheelSensitivity.viewer}>
+              <A4 className={classes.PrintingPaper} rootRef={paperRef}>
+                <Typography component="header" className={classes.Note}>
+                  <Typography style={{ textDecoration: 'underline', fontWeight: 600 }}>מס' הזמנה</Typography>
+                  <TextWithLineBreaks>{headerNote}</TextWithLineBreaks>
+                </Typography>
+                <template.Component images={images} onImageContextMenu={openImageContextMenu} />
+              </A4>
+            </ZoomWrapper>
+          </main>
+          <AppModal />
+          <Drawer
+            className={classes.DrawerWrapper}
+            onClose={toggleDrawer}
+            open={drawerOpen}
+            classes={{ paper: classes.Drawer }}
+            variant={smallScreen ? "temporary" : "permanent"}
+            anchor="right"
+          >
+            <EditSection
+              onUpload={uploadFiles}
+              loaded={!!images.length}
+              onClear={onClear}
+              amount={6}
+              headerNote={headerNote}
+              setHeaderNote={setHeaderNote}
+              openSettings={openSettings}
+              template={template}
+              toggleTemplate={toggleTemplates}
+            />
+          </Drawer>
+        </div>
+      </ImageDropZone>
   );
 }
 

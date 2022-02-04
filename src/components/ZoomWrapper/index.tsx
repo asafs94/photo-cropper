@@ -15,17 +15,12 @@ const useStyles = makeStyles((theme) => {
       boxSizing: "border-box",
     },
     Settings: {
-      position: "sticky",
-      top: "100%",
+      position: "absolute",
+      bottom: 0,
       left: 0,
       zIndex: 1,
       alignSelf: "flex-start",
       "&>div": {
-        position: "absolute",
-        left: 0,
-        bottom: -20,
-        width: "fit-content",
-        height: "fit-content",
         display: "grid",
         gridGap: theme.spacing(),
         gridTemplateColumns: "auto auto auto auto",
@@ -159,7 +154,7 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit", removeSelect, rem
     return () => {
       window.removeEventListener("resize", calcFitScale, false);
     };
-  }, []);
+  }, [calcFitScale]);
 
   const onSelect = useCallback(
     async (
@@ -237,7 +232,7 @@ const ZoomWrapper = ({ children: child, defaultOption = "fit", removeSelect, rem
       document.removeEventListener("mouseup", onDrop, false);
       document.removeEventListener("touchend", onDrop, false);
     };
-  }, []);
+  }, [onDrop]);
 
   const onWheel = (event: React.WheelEvent) => {
     event.preventDefault();

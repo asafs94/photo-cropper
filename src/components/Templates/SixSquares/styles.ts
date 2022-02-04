@@ -16,7 +16,7 @@ export default makeStyles( (theme: Theme) => {
         },
         '@media print':{
             Square:{
-                border: 'none',
+                border: `1px solid ${theme.palette.primary.main}`,
                 width: '85mm',
                 height: '85mm',
                 margin: '1mm',

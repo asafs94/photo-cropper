@@ -14,7 +14,7 @@ export default function SixSquares({ images=[], onImageContextMenu }: SixSquares
     return (
         <div className={classes.Root}>
             {images.map((image, index) => 
-                <AppImageContainer onContextMenu={onImageContextMenu(image.id)} className={classes.Square} id={image.id} key={`${image.id}`} />
+                <AppImageContainer onContextMenu={onImageContextMenu(image.id)} className={classes.Square} id={image.id} key={`${image.id}-six-squares`} />
             )}
         </div>
     )

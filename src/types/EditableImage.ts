@@ -2,7 +2,6 @@ import { Position } from ".";
 import { CroppableImage } from "./CroppableImage";
 import TextBox from "./TextBox";
 
-
 interface ConstructorPayload {
     croppableImage?: CroppableImage,
     file?: File,

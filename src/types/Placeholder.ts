@@ -1,5 +1,3 @@
-import { CroppableImage } from "./CroppableImage";
-
 import placeholder from '../resources/placeholder.jpg';
 import EditableImage from "./EditableImage";
 

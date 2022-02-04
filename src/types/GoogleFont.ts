@@ -1,5 +1,3 @@
-
-
 type GoogleFont = {
     kind: string,
     family: string,
@@ -11,6 +9,5 @@ type GoogleFont = {
         [key:string]: string
     }
 }
-
 
 export default GoogleFont;

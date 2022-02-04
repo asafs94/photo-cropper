@@ -4,7 +4,6 @@ import { SettingsDispatchAction } from "../../types/store/dispatch";
 import { SettingsState } from "../../types/store/reducers";
 import initialSettingsState from "./initialState";
 
-
 const reducer: Reducer<SettingsState, SettingsDispatchAction> = (state, action) => {
     switch(action.type){
         case SettingsActions.setWheelSensitivity:{
@@ -43,6 +42,5 @@ const useSettingsReducer = () => {
 
     return [state, dispatch] as const;
 }
-
 
 export default useSettingsReducer

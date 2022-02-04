@@ -1,8 +1,6 @@
 import { Position } from ".";
 import { v4 } from 'uuid';
 
-
-
 export class CroppableImage {
 
     private _id: string;

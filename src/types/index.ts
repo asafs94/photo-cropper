@@ -1,5 +1,3 @@
-
-
 export interface IdentifiedItem {
     id: any;
 }
@@ -24,7 +22,6 @@ export type RecursivePartial<T> = {
       T[P] extends object ? RecursivePartial<T[P]> :
       T[P];
   };
-
 
 export interface Request<T> { 
     resolve: (value: void | PromiseLike<void>) => void,

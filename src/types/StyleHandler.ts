@@ -2,7 +2,7 @@ import { CSSProperties } from "@material-ui/styles";
 import { RGBColor } from "react-color";
 import { HorizontalAlignment } from ".";
 import { rgbColorsAreEqual } from "../utils/textStylesUtil";
-import { FontWeight, TextShadow, TextShadowPayload, TextStroke, TextStrokePayload } from "./StylesDefinitions";
+import { FontWeight, TextShadowPayload, TextStrokePayload } from "./StylesDefinitions";
 import TextState from "./TextboxState";
 
 export default class StyleHandler {
